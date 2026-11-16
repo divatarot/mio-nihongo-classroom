@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#302361">
+  <meta name="description" content="Mio 日文教室：從你的程度、目標與喜歡的話題出發，安排一對一日文課。">
+  <title>Mio 日文教室｜一對一日文課</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#overview" aria-label="Mio 日文教室首頁"><span class="brand-mark">み</span><span><strong>Mio 日文教室</strong><small>學日文大小事</small></span></a>
+    <nav aria-label="主選單"><a href="#overview">課程介紹</a><a href="#apply">試上申請</a><a href="#mine">我的課程</a><a href="#teacher" id="teacher-link" hidden>老師工作區</a></nav>
+    <div class="account"><span id="account-label"></span><button id="auth-open" type="button" class="button secondary">登入／註冊</button><button id="sign-out" type="button" class="button secondary" hidden>登出</button></div>
+  </header>
+  <main>
+    <section id="overview" class="hero">
+      <div class="hero-copy"><div class="eyebrow"><span></span> 日文一對一家教</div><h1>找到適合<br>你的日文課</h1><p>從程度、目標與你有興趣的話題出發，和 Mio 老師一起安排最適合的練習。</p><a class="button primary" href="#apply">填寫試上申請 <span aria-hidden="true">↗</span></a></div>
+    </section>
+    <section class="section" aria-labelledby="directions-title"><div class="section-heading"><div><p class="kicker">LEARNING PATHS</p><h2 id="directions-title">想先練習什麼？</h2><p>試上時可以和老師再確認學習方向。</p></div></div><div class="direction-grid"><article class="card direction"><span class="icon">聽</span><h3>聽力・口說</h3><p>抓出重點，再用自己的話自然說出來。</p></article><article class="card direction"><span class="icon">働</span><h3>日本生活・工作</h3><p>練習生活與職場情境中的語氣和應對。</p></article><article class="card direction"><span class="icon">好</span><h3>追星／動漫／日劇</h3><p>從喜歡的內容練習聽解與表達感想。</p></article><article class="card direction"><span class="icon">旅</span><h3>日常／旅遊會話</h3><p>從點餐、問路到閒聊，建立開口信心。</p></article></div></section>
+    <section class="section" aria-labelledby="plans-title"><div class="section-heading"><div><p class="kicker">COURSES</p><h2 id="plans-title">選擇你的學習方式</h2><p>課程時間與費用由老師和你確認。</p></div></div><div class="plan-grid"><article class="card plan"><span class="plan-num">01</span><h3>試上＆程度評估</h3><p>第一次上課，先找出目前的程度與卡關原因。</p><small>單次一對一・時間與老師確認</small></article><article class="card plan"><span class="plan-num">02</span><h3>固定一對一</h3><p>養成開口習慣，持續練習與回顧。</p><small>固定時段・堂數與老師確認</small></article><article class="card plan"><span class="plan-num">03</span><h3>主題客製課</h3><p>依旅行、工作、追星等明確目標安排。</p><small>可帶自己的素材</small></article></div></section>
+    <section id="apply" class="section form-section" aria-labelledby="apply-title"><div class="section-heading"><div><p class="kicker">TRIAL LESSON</p><h2 id="apply-title">試上申請</h2><p>登入後送出申請，可在「我的課程」查看老師回覆。</p></div></div><div class="card form-card"><div id="apply-locked" class="locked"><h3>先登入，再告訴我們你的學習目標</h3><p>使用電子郵件註冊或登入後，即可安全保存申請。</p><button type="button" class="button primary" data-open-auth>登入／註冊</button></div><form id="apply-form" hidden><div class="form-grid"><label>姓名或稱呼 <input name="student_name" required maxlength="120" autocomplete="name"></label><label>申請身分 <select name="applicant_role"><option>學生本人</option><option>家長代填</option></select></label><label id="guardian-field" hidden>家長稱呼 <input name="guardian_name" maxlength="120"></label><label>聯絡方式 <input name="contact" required maxlength="240" placeholder="LINE ID、電子郵件或電話"></label><label>目前程度 <select name="level"><option>程度待確認</option><option>零基礎</option><option>初級／N5</option><option>初中級／N4</option><option>中級／N3</option><option>中高級／N2</option><option>高級／N1</option></select></label><label>最想練習的方向 <select name="direction"><option>聽力・口說</option><option>日本生活・工作</option><option>追星／動漫／日劇</option><option>日常／旅遊會話</option></select></label><label>想了解的課程 <select name="plan"><option value="trial">試上＆程度評估</option><option value="weekly">固定一對一</option><option value="topic">主題客製課</option></select></label><label class="wide">學習目標 <textarea name="goal" required maxlength="2500" rows="4" placeholder="例如：想更自然地和日本朋友聊天"></textarea></label><label class="wide">方便上課的時間 <textarea name="availability" required maxlength="2500" rows="3" placeholder="例如：平日晚間或週末下午"></textarea></label></div><div class="form-actions"><p>老師會使用你提供的資料聯絡並安排課程。</p><button type="submit" class="button primary" id="apply-submit">送出試上申請</button></div></form><p id="apply-message" class="message" role="status" hidden></p></div></section>
+    <section id="mine" class="section dashboard-section" aria-labelledby="mine-title"><div class="section-heading"><div><p class="kicker">MY CLASSROOM</p><h2 id="mine-title">我的課程</h2><p>這裡只顯示你自己的試上申請與回覆。</p></div></div><div id="mine-content" class="card empty-state">登入後查看你的申請。</div></section>
+    <section id="teacher" class="section dashboard-section" aria-labelledby="teacher-title" hidden><div class="section-heading"><div><p class="kicker">TEACHER</p><h2 id="teacher-title">老師工作區</h2><p>先集中查看與回覆試上申請；完整後台流程待討論後調整。</p></div></div><div id="teacher-content" class="card empty-state">載入申請中…</div></section>
+  </main>
+  <footer><span>Mio 日文教室</span><span>從你想說的日文開始。</span></footer>
+  <dialog id="auth-dialog" aria-labelledby="auth-title"><form method="dialog" class="dialog-head"><h2 id="auth-title">登入日文教室</h2><button aria-label="關閉" class="close">×</button></form><p>使用電子郵件登入，繼續申請或查看課程。</p><form id="auth-form"><label>電子郵件 <input name="email" type="email" required autocomplete="email"></label><label>密碼 <input name="password" type="password" required minlength="8" autocomplete="current-password"></label><div class="dialog-actions"><button type="submit" data-auth-action="signin" class="button primary">登入</button><button type="button" data-auth-action="signup" class="button secondary">註冊新帳號</button></div></form><p id="auth-message" class="message" role="status" hidden></p></dialog>
+</body>
+</html>
