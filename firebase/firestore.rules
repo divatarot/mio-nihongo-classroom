@@ -1,0 +1,60 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function verified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+    function isTeacher() {
+      return verified() && exists(/databases/$(database)/documents/teachers/$(request.auth.uid));
+    }
+    function validStatus(status) {
+      return status in ['待回覆', '已聯繫', '等待學員回覆', '已確認'];
+    }
+    match /teachers/{userId} {
+      allow get: if verified() && request.auth.uid == userId;
+      allow list, create, update, delete: if false;
+    }
+    match /applications/{applicationId} {
+      allow get, list: if verified() && (resource.data.ownerId == request.auth.uid || isTeacher());
+      allow create: if verified()
+        && request.resource.data.keys().hasAll([
+          'ownerId', 'accountEmail', 'studentName', 'applicantRole', 'guardianName',
+          'contact', 'level', 'direction', 'plan', 'goal', 'availability',
+          'status', 'teacherReply', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'ownerId', 'accountEmail', 'studentName', 'applicantRole', 'guardianName',
+          'contact', 'level', 'direction', 'plan', 'goal', 'availability',
+          'status', 'teacherReply', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.accountEmail == request.auth.token.email
+        && request.resource.data.studentName is string
+        && request.resource.data.studentName.size() > 0 && request.resource.data.studentName.size() <= 120
+        && request.resource.data.applicantRole in ['學生本人', '家長代填']
+        && request.resource.data.guardianName is string
+        && request.resource.data.guardianName.size() <= 120
+        && (request.resource.data.applicantRole == '學生本人' || request.resource.data.guardianName.size() > 0)
+        && request.resource.data.contact is string
+        && request.resource.data.contact.size() > 0 && request.resource.data.contact.size() <= 240
+        && request.resource.data.level in ['程度待確認', '零基礎', '初級／N5', '初中級／N4', '中級／N3', '中高級／N2', '高級／N1']
+        && request.resource.data.direction in ['聽力・口說', '日本生活・工作', '追星／動漫／日劇', '日常／旅遊會話']
+        && request.resource.data.plan in ['trial', 'weekly', 'topic']
+        && request.resource.data.goal is string
+        && request.resource.data.goal.size() > 0 && request.resource.data.goal.size() <= 2500
+        && request.resource.data.availability is string
+        && request.resource.data.availability.size() > 0 && request.resource.data.availability.size() <= 2500
+        && request.resource.data.status == '待回覆'
+        && request.resource.data.teacherReply == ''
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isTeacher()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'teacherReply', 'updatedAt'])
+        && validStatus(request.resource.data.status)
+        && request.resource.data.teacherReply is string
+        && request.resource.data.teacherReply.size() <= 2500
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+  }
+}
