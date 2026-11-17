@@ -3,31 +3,1209 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#302361">
-  <meta name="description" content="Mio 日文教室：從你的程度、目標與喜歡的話題出發，安排一對一日文課。">
-  <title>Mio 日文教室｜一對一日文課</title>
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
-  <script src="./config.js?v=20261117"></script>
-  <script type="module" src="./app.js?v=20261117"></script>
+  <title>黑犬星球｜線上 1 對 1 日文課｜初學到 N2 日文學習</title>
+  <meta name="description" content="黑犬星球提供線上 1 對 1 日文課，適合初學、N5-N2、旅遊日文與追星日文。先填表預約 15 分鐘免費小課，實際感受老師怎麼把日文講懂，再依需求和預算討論課程。">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#315f52">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="黑犬星球｜線上 1 對 1 日文課">
+  <meta property="og:description" content="適合初學到 N2。先填表預約 15 分鐘免費小課，實際感受老師怎麼帶你把日文學懂。">
+  <meta property="og:locale" content="zh_TW">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "黑犬星球線上 1 對 1 日文課",
+      "description": "適合初學到 N2 的線上日文課，課程包含初階打底、JLPT 文法閱讀、旅遊生活日文、追星日文與主題教材討論。",
+      "provider": {
+        "@type": "Organization",
+        "name": "黑犬星球"
+      },
+      "educationalLevel": "Beginner to Intermediate",
+      "inLanguage": "zh-Hant"
+    }
+  </script>
+  <style>
+    :root {
+      --ink: #20201e;
+      --muted: #68625b;
+      --line: #ddd5ca;
+      --paper: #fbf7ef;
+      --soft: #f1eadf;
+      --white: #fffdf9;
+      --green: #315f52;
+      --green-soft: #dfece5;
+      --red: #a94e3d;
+      --gold: #b58236;
+      --blue: #425f86;
+      --shadow: 0 18px 50px rgba(47, 42, 35, .12);
+      --radius: 8px;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] { display: none !important; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.65;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(32, 32, 30, .09);
+      background: rgba(251, 247, 239, .9);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav {
+      width: min(1160px, calc(100% - 36px));
+      height: 64px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      white-space: nowrap;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 50%;
+      font-size: 15px;
+    }
+
+    .navlinks {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .navlinks a {
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+
+    .navlinks a:hover {
+      background: var(--soft);
+      color: var(--ink);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--white);
+      font-weight: 800;
+      line-height: 1.2;
+      box-shadow: 0 8px 22px rgba(32, 32, 30, .18);
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .hero {
+      min-height: auto;
+      display: grid;
+      align-items: center;
+      padding: 44px 0 34px;
+      overflow: hidden;
+    }
+
+    .hero-inner,
+    .section-inner {
+      width: min(1160px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(340px, .78fr);
+      gap: 46px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--green);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: var(--green);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin-bottom: 20px;
+      font-size: clamp(44px, 7vw, 86px);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 670px;
+      margin-bottom: 28px;
+      color: #4c4842;
+      font-size: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .proof-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 740px;
+    }
+
+    .proof {
+      min-height: 96px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 249, .62);
+      border-radius: var(--radius);
+    }
+
+    .proof strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .proof span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .study-visual {
+      position: relative;
+      min-height: 520px;
+    }
+
+    .desk-photo {
+      position: absolute;
+      inset: 18px 0 72px 42px;
+      overflow: hidden;
+      border-radius: 8px;
+      background:
+        linear-gradient(140deg, rgba(255,255,255,.2), rgba(255,255,255,0) 36%),
+        linear-gradient(135deg, #365f51 0%, #365f51 36%, #ede2cf 36.2%, #ede2cf 100%);
+      box-shadow: var(--shadow);
+    }
+
+    .desk-photo::before {
+      content: "";
+      position: absolute;
+      left: 11%;
+      top: 13%;
+      width: 58%;
+      height: 66%;
+      background: #fffaf0;
+      border-radius: 7px;
+      box-shadow: 0 20px 40px rgba(36, 28, 18, .18);
+      transform: rotate(-6deg);
+    }
+
+    .desk-photo::after {
+      content: "みんなの日本語\a N3-N2 文法閱讀\a 旅遊・追星・生活日文";
+      white-space: pre;
+      position: absolute;
+      left: 18%;
+      top: 22%;
+      color: #2b2a28;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.75;
+      transform: rotate(-6deg);
+    }
+
+    .notebook {
+      position: absolute;
+      right: 7%;
+      bottom: 9%;
+      width: 58%;
+      min-height: 210px;
+      padding: 24px;
+      border: 1px solid rgba(32,32,30,.12);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: 0 22px 50px rgba(47,42,35,.14);
+    }
+
+    .notebook h3 {
+      margin-bottom: 12px;
+      font-size: 22px;
+    }
+
+    .checkline {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 8px;
+      margin: 10px 0;
+      color: #514c45;
+      font-size: 15px;
+    }
+
+    .checkline::before {
+      content: "✓";
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .mini-card {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 210px;
+      padding: 18px;
+      border-radius: 8px;
+      background: #22211f;
+      color: var(--white);
+      box-shadow: 0 20px 42px rgba(32,32,30,.18);
+    }
+
+    .mini-card b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .mini-card span {
+      color: rgba(255, 253, 249, .76);
+      font-size: 14px;
+    }
+
+    section {
+      padding: 86px 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, .75fr) minmax(280px, .45fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .section-head p,
+    .muted {
+      color: var(--muted);
+    }
+
+    .band {
+      background: var(--white);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card,
+    .price-card,
+    .rule-box,
+    .faq-item {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 249, .76);
+    }
+
+    .card {
+      padding: 24px;
+    }
+
+    .tag {
+      display: inline-flex;
+      margin-bottom: 16px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .card h3,
+    .price-card h3,
+    .rule-box h3 {
+      margin-bottom: 10px;
+      font-size: 23px;
+      line-height: 1.22;
+    }
+
+    .card p {
+      color: var(--muted);
+    }
+
+    .list {
+      padding: 0;
+      margin: 18px 0 0;
+      list-style: none;
+    }
+
+    .list li {
+      position: relative;
+      padding-left: 18px;
+      margin: 8px 0;
+      color: #514c45;
+    }
+
+    .list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .75em;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(300px, .58fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .course-map {
+      display: grid;
+      gap: 12px;
+    }
+
+    .route {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(251, 247, 239, .65);
+    }
+
+    .route b {
+      color: var(--green);
+      font-size: 15px;
+    }
+
+    .route strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 19px;
+    }
+
+    .route span {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .notice {
+      padding: 24px;
+      border-left: 5px solid var(--red);
+      border-radius: var(--radius);
+      background: #fff4ed;
+    }
+
+    .notice h3 {
+      margin-bottom: 8px;
+      font-size: 22px;
+    }
+
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .price-card {
+      position: relative;
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .price-card.featured {
+      border-color: rgba(49, 95, 82, .42);
+      background: #f5fbf7;
+      box-shadow: 0 14px 36px rgba(49, 95, 82, .12);
+    }
+
+    .price-card small {
+      display: block;
+      min-height: 38px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .price {
+      margin: 18px 0 8px;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .price span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .package {
+      padding-top: 13px;
+      border-top: 1px solid var(--line);
+      color: #4b4640;
+      font-size: 14px;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .rule-box {
+      padding: 24px;
+    }
+
+    .rule-box:nth-child(2) {
+      background: #f7f3eb;
+    }
+
+    .rule-box:nth-child(3) {
+      background: #f5f8fb;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      counter-reset: step;
+    }
+
+    .step {
+      min-height: 190px;
+      padding: 22px;
+      border-top: 3px solid var(--green);
+      background: var(--white);
+      border-radius: var(--radius);
+      counter-increment: step;
+    }
+
+    .step::before {
+      content: counter(step, decimal-leading-zero);
+      display: block;
+      margin-bottom: 20px;
+      color: var(--gold);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .fit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .fit {
+      padding: 26px;
+      border-radius: var(--radius);
+      background: var(--white);
+      border: 1px solid var(--line);
+    }
+
+    .fit.good {
+      border-top: 5px solid var(--green);
+    }
+
+    .fit.limit {
+      border-top: 5px solid var(--gold);
+    }
+
+    .faq {
+      display: grid;
+      gap: 12px;
+    }
+
+    .faq-item {
+      padding: 20px 22px;
+    }
+
+    .faq-item strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 18px;
+    }
+
+    .cta {
+      padding: 76px 0;
+      background: #22211f;
+      color: var(--white);
+    }
+
+    .cta .section-inner {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) auto;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .cta h2 {
+      max-width: 760px;
+      margin-bottom: 12px;
+    }
+
+    .cta p {
+      max-width: 720px;
+      color: rgba(255, 253, 249, .74);
+      font-size: 18px;
+    }
+
+    .cta .button {
+      border-color: var(--white);
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: none;
+      white-space: nowrap;
+    }
+
+    footer {
+      padding: 28px 0;
+      background: #1b1a18;
+      color: rgba(255, 253, 249, .62);
+      font-size: 13px;
+    }
+
+    footer .section-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .navlinks {
+        display: none;
+      }
+
+      .hero-grid,
+      .section-head,
+      .split,
+      .cta .section-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .study-visual {
+        min-height: 500px;
+      }
+
+      .cards,
+      .rules-grid,
+      .steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pricing {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        width: min(100% - 28px, 1160px);
+      }
+
+      .brand span {
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .hero {
+        padding-top: 36px;
+      }
+
+      .hero-inner,
+      .section-inner {
+        width: min(100% - 28px, 1160px);
+      }
+
+      h1 {
+        font-size: 43px;
+      }
+
+      .lead {
+        font-size: 18px;
+      }
+
+      .proof-row,
+      .cards,
+      .pricing,
+      .rules-grid,
+      .steps,
+      .fit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .study-visual {
+        min-height: 430px;
+      }
+
+      .desk-photo {
+        inset: 0 0 88px 0;
+      }
+
+      .desk-photo::after {
+        left: 13%;
+        top: 18%;
+        font-size: 20px;
+      }
+
+      .notebook {
+        right: 0;
+        bottom: 0;
+        width: 86%;
+        min-height: 178px;
+      }
+
+      .mini-card {
+        display: none;
+      }
+
+      .route {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 62px 0;
+      }
+    }
+
+    .apply-section { background: var(--soft); }
+    .apply-intro { max-width: 760px; margin-bottom: 24px; }
+    .apply-intro h2 { margin-bottom: 12px; }
+    .apply-intro p { color: var(--muted); }
+    .apply-note { margin-top: 12px; font-size: .92rem; }
+    .trial-form { max-width: 850px; padding: clamp(22px, 4vw, 40px); border: 1px solid var(--line); border-radius: 16px; background: var(--white); box-shadow: var(--shadow); }
+    .trial-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .trial-field { display: grid; gap: 8px; align-content: start; }
+    .trial-field.wide { grid-column: 1 / -1; }
+    .trial-field > span, .trial-field legend { font-weight: 700; }
+    .trial-field small { color: var(--muted); }
+    .trial-field input, .trial-field select, .trial-field textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 12px 13px; color: var(--ink); background: #fff; font: inherit; }
+    .trial-field textarea { resize: vertical; min-height: 100px; }
+    .trial-field input:focus, .trial-field select:focus, .trial-field textarea:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+    .trial-field fieldset { border: 0; padding: 0; margin: 0; }
+    .choice-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .choice-grid label { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 100px; cursor: pointer; }
+    .choice-grid input { width: auto; margin: 0; accent-color: var(--green); }
+    .trial-actions { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .trial-actions p { color: var(--muted); font-size: .9rem; }
+    .trial-error { margin-top: 16px; color: #a92b24; font-weight: 700; }
+    .trial-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    @media (max-width: 700px) { .trial-grid { grid-template-columns: 1fr; } .trial-field.wide { grid-column: auto; } .trial-actions { align-items: stretch; flex-direction: column; } }
+  </style>
+  <script defer src="./trial.js"></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#overview" aria-label="Mio 日文教室首頁"><span class="brand-mark">み</span><span><strong>Mio 日文教室</strong><small>學日文大小事</small></span></a>
-    <nav aria-label="主選單"><a href="#overview">課程介紹</a><a href="#apply">試上申請</a><a href="#mine">我的課程</a><a href="#teacher" id="teacher-link" hidden>老師工作區</a></nav>
-    <div class="account"><span id="account-label"></span><button id="auth-open" type="button" class="button secondary">登入／註冊</button><button id="sign-out" type="button" class="button secondary" hidden>登出</button></div>
+    <nav class="nav" aria-label="主要導覽">
+      <a class="brand" href="#top" aria-label="回到首頁">
+        <span class="mark">日</span>
+        <span>黑犬星球｜線上日文課</span>
+      </a>
+      <div class="navlinks">
+        <a href="#courses">課程</a>
+        <a href="#process">免費小課</a>
+        <a href="#pricing">報價方式</a>
+        <a href="#rules">教材安排</a>
+      </div>
+      <a class="button" href="#apply">填表預約</a>
+    </nav>
   </header>
-  <main>
-    <section id="overview" class="hero">
-      <div class="hero-copy"><div class="eyebrow"><span></span> 日文一對一家教</div><h1>找到適合<br>你的日文課</h1><p>從程度、目標與你有興趣的話題出發，和 Mio 老師一起安排最適合的練習。</p><a class="button primary" href="#apply">填寫試上申請 <span aria-hidden="true">↗</span></a></div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-inner hero-grid">
+        <div>
+          <p class="eyebrow">Online Japanese Lesson</p>
+          <h1>日文卡住的地方，有人慢慢講到你懂。</h1>
+          <p class="lead">想從《大家的日本語》打底、準備 N5-N2、學旅遊日文，或用追星、IG 貼文、喜歡的內容練日文，都可以先來 15 分鐘免費小課。老師會真的帶你學一小段，再依你的程度、目標和預算討論適合的上課方式。</p>
+          <div class="hero-actions">
+            <a class="button" href="#apply">填表預約免費小課</a>
+            <a class="button secondary" href="#courses">先看課程方向</a>
+          </div>
+          <div class="proof-row" aria-label="課程特色">
+            <div class="proof">
+              <strong>好懂</strong>
+              <span>把文法、助詞和句子拆成你聽得懂的說法。</span>
+            </div>
+            <div class="proof">
+              <strong>先試上</strong>
+              <span>15 分鐘免費小課會實際教，不只是諮詢。</span>
+            </div>
+            <div class="proof">
+              <strong>可討論</strong>
+              <span>依你的需求和預算，安排比較適合的教材與堂數。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="study-visual" aria-label="日文學習教材視覺">
+          <div class="desk-photo"></div>
+          <div class="notebook">
+            <h3>一堂課大概會有什麼</h3>
+            <div class="checkline">文法或句型拆解</div>
+            <div class="checkline">例句、替換練習與作業</div>
+            <div class="checkline">依學生程度調整節奏</div>
+          </div>
+          <div class="mini-card">
+            <b>1:1</b>
+            <span>線上授課，每堂 60 分鐘</span>
+          </div>
+        </div>
+      </div>
     </section>
-    <section class="section" aria-labelledby="directions-title"><div class="section-heading"><div><p class="kicker">LEARNING PATHS</p><h2 id="directions-title">想先練習什麼？</h2><p>試上時可以和老師再確認學習方向。</p></div></div><div class="direction-grid"><article class="card direction"><span class="icon">聽</span><h3>聽力・口說</h3><p>抓出重點，再用自己的話自然說出來。</p></article><article class="card direction"><span class="icon">働</span><h3>日本生活・工作</h3><p>練習生活與職場情境中的語氣和應對。</p></article><article class="card direction"><span class="icon">好</span><h3>追星／動漫／日劇</h3><p>從喜歡的內容練習聽解與表達感想。</p></article><article class="card direction"><span class="icon">旅</span><h3>日常／旅遊會話</h3><p>從點餐、問路到閒聊，建立開口信心。</p></article></div></section>
-    <section class="section" aria-labelledby="plans-title"><div class="section-heading"><div><p class="kicker">COURSES</p><h2 id="plans-title">選擇你的學習方式</h2><p>課程時間與費用由老師和你確認。</p></div></div><div class="plan-grid"><article class="card plan"><span class="plan-num">01</span><h3>試上＆程度評估</h3><p>第一次上課，先找出目前的程度與卡關原因。</p><small>單次一對一・時間與老師確認</small></article><article class="card plan"><span class="plan-num">02</span><h3>固定一對一</h3><p>養成開口習慣，持續練習與回顧。</p><small>固定時段・堂數與老師確認</small></article><article class="card plan"><span class="plan-num">03</span><h3>主題客製課</h3><p>依旅行、工作、追星等明確目標安排。</p><small>可帶自己的素材</small></article></div></section>
-    <section id="apply" class="section form-section" aria-labelledby="apply-title"><div class="section-heading"><div><p class="kicker">TRIAL LESSON</p><h2 id="apply-title">試上申請</h2><p>登入後送出申請，可在「我的課程」查看老師回覆。</p></div></div><div class="card form-card"><div id="apply-locked" class="locked"><h3>先登入，再告訴我們你的學習目標</h3><p>使用電子郵件註冊或登入後，即可安全保存申請。</p><button type="button" class="button primary" data-open-auth>登入／註冊</button></div><form id="apply-form" hidden><div class="form-grid"><label>姓名或稱呼 <input name="student_name" required maxlength="120" autocomplete="name"></label><label>申請身分 <select name="applicant_role"><option>學生本人</option><option>家長代填</option></select></label><label id="guardian-field" hidden>家長稱呼 <input name="guardian_name" maxlength="120"></label><label>聯絡方式 <input name="contact" required maxlength="240" placeholder="LINE ID、電子郵件或電話"></label><label>目前程度 <select name="level"><option>程度待確認</option><option>零基礎</option><option>初級／N5</option><option>初中級／N4</option><option>中級／N3</option><option>中高級／N2</option><option>高級／N1</option></select></label><label>最想練習的方向 <select name="direction"><option>聽力・口說</option><option>日本生活・工作</option><option>追星／動漫／日劇</option><option>日常／旅遊會話</option></select></label><label>想了解的課程 <select name="plan"><option value="trial">試上＆程度評估</option><option value="weekly">固定一對一</option><option value="topic">主題客製課</option></select></label><label class="wide">學習目標 <textarea name="goal" required maxlength="2500" rows="4" placeholder="例如：想更自然地和日本朋友聊天"></textarea></label><label class="wide">方便上課的時間 <textarea name="availability" required maxlength="2500" rows="3" placeholder="例如：平日晚間或週末下午"></textarea></label></div><div class="form-actions"><p>老師會使用你提供的資料聯絡並安排課程。</p><button type="submit" class="button primary" id="apply-submit">送出試上申請</button></div></form><p id="apply-message" class="message" role="status" hidden></p></div></section>
-    <section id="mine" class="section dashboard-section" aria-labelledby="mine-title"><div class="section-heading"><div><p class="kicker">MY CLASSROOM</p><h2 id="mine-title">我的課程</h2><p>這裡只顯示你自己的試上申請與回覆。</p></div></div><div id="mine-content" class="card empty-state">登入後查看你的申請。</div></section>
-    <section id="teacher" class="section dashboard-section" aria-labelledby="teacher-title" hidden><div class="section-heading"><div><p class="kicker">TEACHER</p><h2 id="teacher-title">老師工作區</h2><p>先集中查看與回覆試上申請；完整後台流程待討論後調整。</p></div></div><div id="teacher-content" class="card empty-state">載入申請中…</div></section>
+
+    <section id="courses" class="band">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Courses</p>
+            <h2>常見課程方向</h2>
+          </div>
+          <p>你不用先很會日文，也不用把目標想得很完整。可以從課本、檢定、旅遊、追星或你喜歡的內容開始，老師會把它整理成你目前學得動的日文。</p>
+        </div>
+
+        <div class="cards">
+          <article class="card">
+            <span class="tag">入門到初級</span>
+            <h3>初階日文打底</h3>
+            <p>以《大家的日本語》為主軸，適合五十音後、剛開始建立文法與句型的人。</p>
+            <ul class="list">
+              <li>單字、句型、助詞與動詞變化</li>
+              <li>課本例句延伸成生活情境</li>
+              <li>每堂保留固定進度與作業</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="tag">N5-N2</span>
+            <h3>檢定文法與閱讀</h3>
+            <p>適合想準備 JLPT，或學過但文法容易混在一起的學生。</p>
+            <ul class="list">
+              <li>文法比較、題型練習與錯題整理</li>
+              <li>閱讀拆句，找出句子主幹</li>
+              <li>N3-N2 以閱讀與文法強化為主</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="tag">生活口說</span>
+            <h3>旅遊與生活日文</h3>
+            <p>適合想把學過的句型用在點餐、交通、住宿、購物與簡單交流。</p>
+            <ul class="list">
+              <li>情境句型、角色練習與常用表達</li>
+              <li>可加入 IG 學日文或學生感興趣素材</li>
+              <li>適合把學過的句型練成能用的句子</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <span class="tag">興趣主題</span>
+            <h3>追星日文</h3>
+            <p>適合想看懂偶像貼文、直播片段、歌詞短句、訪談和活動常見用語的學生。</p>
+            <ul class="list">
+              <li>用你喜歡的內容補充課外教材</li>
+              <li>拆解貼文、留言、歌詞與訪談句子</li>
+              <li>把追星情境變成單字、文法與表達練習</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner split">
+        <div>
+          <p class="eyebrow">Lesson Map</p>
+          <h2>一堂課大概怎麼進行？</h2>
+          <p class="muted">實際內容會依學生程度調整，但上課不會只是聊天，也不是把課本唸完而已。老師會先抓出你聽不懂或用不出來的地方，再用例句和練習帶你消化。</p>
+          <div class="course-map">
+            <div class="route">
+              <b>00-10 min</b>
+              <div>
+                <strong>複習與卡點整理</strong>
+                <span>確認目前程度、最近卡住的文法，或你想問的句子。</span>
+              </div>
+            </div>
+            <div class="route">
+              <b>10-35 min</b>
+              <div>
+                <strong>主題教學</strong>
+                <span>初階可用《大家的日本語》推進；檢定課看文法閱讀；旅遊、追星或興趣課會搭配主題素材。</span>
+              </div>
+            </div>
+            <div class="route">
+              <b>35-52 min</b>
+              <div>
+                <strong>替換練習與開口</strong>
+                <span>把句型換成自己的內容，必要時加入 IG 例句、追星內容、課外素材或學生提供的短文。</span>
+              </div>
+            </div>
+            <div class="route">
+              <b>52-60 min</b>
+              <div>
+                <strong>整理與作業</strong>
+                <span>依這堂課狀況整理複習重點，讓你知道接下來可以怎麼練。</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="notice">
+          <h3>你喜歡的內容，也可以變教材</h3>
+          <p>如果你有喜歡的 IG 貼文、旅遊情境、偶像貼文、歌詞短句、直播片段或課本外的例句，都可以帶來課堂一起看。老師會先判斷難度，再用你目前聽得懂的方式拆給你。</p>
+          <p class="muted">少量補充可以放進一般課；如果想長期用自備教材上課，再一起討論要不要改成主題客製課。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="pricing" class="band">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Quotation</p>
+            <h2>先看大概行情，不用一開始做很大決定。</h2>
+          </div>
+          <p>線上 1 對 1 日文課常見行情約落在 NT$600-900 / 小時。這裡會先用比較好入門的方式報價，實際費用可依程度、教材、備課量、堂數和預算討論；不用一開始就買大課包。</p>
+        </div>
+
+        <div class="pricing">
+          <article class="price-card">
+            <h3>初階打底</h3>
+            <small>大家的日本語、五十音後、N5 前後程度</small>
+            <div class="price">約 NT$500-600</div>
+            <div class="package">適合想從課本主線穩穩建立文法、句型和練習節奏的人。固定教材、固定進度會比較好安排。</div>
+          </article>
+
+          <article class="price-card featured">
+            <h3>N5-N4 檢定</h3>
+            <small>文法、單字、聽讀練習與考前整理</small>
+            <div class="price">約 NT$550-650</div>
+            <div class="package">會依考試時間、目前程度、需要補強的題型安排課程，也可以只先補最卡的單元。</div>
+          </article>
+
+          <article class="price-card">
+            <h3>N3-N2 文法閱讀</h3>
+            <small>文法比較、閱讀拆句、題型與弱點補強</small>
+            <div class="price">約 NT$650-750</div>
+            <div class="package">N3-N2 同一報價區間，會先確認你卡在文法、閱讀、單字量，還是題目理解。</div>
+          </article>
+
+          <article class="price-card">
+            <h3>旅遊生活日文</h3>
+            <small>情境口說、IG 例句、興趣主題微調</small>
+            <div class="price">約 NT$550-650</div>
+            <div class="package">可依你的旅遊目的、喜歡的內容和想練的情境安排，不會只背旅遊會話書。</div>
+          </article>
+
+          <article class="price-card">
+            <h3>追星日文</h3>
+            <small>偶像貼文、歌詞短句、訪談、直播與活動用語</small>
+            <div class="price">約 NT$600-700</div>
+            <div class="package">會結合你喜歡的團體、作品或內容，適時補充課外教材。</div>
+          </article>
+
+          <article class="price-card">
+            <h3>主題客製課</h3>
+            <small>自備教材、指定主題、文章討論、興趣素材</small>
+            <div class="price">約 NT$700-850</div>
+            <div class="package">適合希望用自己的教材、指定主題或專屬學習計畫上課的人。備課量較高時才會用這個區間。</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Materials</p>
+            <h2>想學課本外的內容，也可以安排。</h2>
+          </div>
+          <p>有些人想照課本穩穩打底，有些人想看貼文、旅遊句子、偶像內容或自己喜歡的文章。兩種都可以，只是課程安排方式不同。</p>
+        </div>
+
+        <div class="rules-grid">
+          <article class="rule-box">
+            <h3>一般課可以加入</h3>
+            <ul class="list">
+              <li>你喜歡的 IG 日文短句</li>
+              <li>旅遊、點餐、購物等生活情境</li>
+              <li>偶像貼文、歌詞短句或活動用語</li>
+              <li>課本句型的生活化延伸</li>
+            </ul>
+          </article>
+
+          <article class="rule-box">
+            <h3>適合主題客製課</h3>
+            <ul class="list">
+              <li>想長期使用自己提供的教材</li>
+              <li>想看文章、影片、歌詞或日劇台詞</li>
+              <li>想固定用追星、作品或興趣主題學日文</li>
+              <li>希望老師課前整理指定主題</li>
+            </ul>
+          </article>
+
+          <article class="rule-box">
+            <h3>怎麼提供教材</h3>
+            <ul class="list">
+              <li>短句或貼文可在課堂中一起看</li>
+              <li>較長內容建議課前 48 小時提供</li>
+              <li>老師會先判斷難度，不會硬塞太難的內容</li>
+              <li>內容很多時，會拆成單字、文法、閱讀或口說慢慢學</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="fit" class="band">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Best Fit</p>
+            <h2>你可能會很適合這樣的上課方式。</h2>
+          </div>
+          <p>這堂課不是要你一開始就很會，而是陪你把卡住的地方整理清楚，再慢慢把日文用出來。</p>
+        </div>
+
+        <div class="fit-grid">
+          <div class="fit good">
+            <h3>很適合這樣的學生</h3>
+            <ul class="list">
+              <li>初學者，想把文法從頭學穩</li>
+              <li>學過一點，但助詞、動詞變化一直混亂</li>
+              <li>準備 N5-N2，需要有人幫忙整理盲點</li>
+              <li>想用日文旅遊、看懂簡單貼文、追星內容或生活句子</li>
+              <li>需要老師用中文解釋清楚，而不是只用日文聊天</li>
+            </ul>
+          </div>
+
+          <div class="fit limit">
+            <h3>如果你有這些目標，先聊聊</h3>
+            <ul class="list">
+              <li>N2 以上高階衝刺或 N1 專門準備</li>
+              <li>商務簡報、面試、工作文件等明確任務</li>
+              <li>想要全日文自由會話練習</li>
+              <li>想大量翻譯文章、論文或公司文件</li>
+              <li>需要特別密集的發音或口說訓練</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">How It Works</p>
+            <h2>預約流程</h2>
+          </div>
+          <p>你不用先把需求整理得很完美。先填一份簡單表單，老師會用免費小課了解你的程度和學習方向，再一起討論適合的課程。</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <strong>填簡單表單</strong>
+            <span>目前程度、為什麼喜歡日文、想學哪一類日文、是否有想用的教材。</span>
+          </div>
+          <div class="step">
+            <strong>15 分鐘免費小課</strong>
+            <span>不是只聊天，老師會實際帶你看一小段日文，讓你感受上課方式。</span>
+          </div>
+          <div class="step">
+            <strong>細談學習方向</strong>
+            <span>依你的程度、興趣、時間和目標，討論適合的主線與教材。</span>
+          </div>
+          <div class="step">
+            <strong>提供個別報價</strong>
+            <span>每位學生需求不同，老師會再提供適合你的課程方案與費用。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">FAQ</p>
+            <h2>常見問題</h2>
+          </div>
+        </div>
+
+        <div class="faq">
+          <div class="faq-item">
+            <strong>一定要先買課包嗎？</strong>
+            <span class="muted">不用。可以先填表和試 15 分鐘免費小課，確認你喜不喜歡這種上課方式，再討論堂數、頻率和預算。</span>
+          </div>
+          <div class="faq-item">
+            <strong>我可以用自己買的教材嗎？</strong>
+            <span class="muted">可以。你可以先在表單裡告訴老師想用什麼教材，免費小課後再一起判斷怎麼安排比較適合。</span>
+          </div>
+          <div class="faq-item">
+            <strong>旅遊日文可以練口說嗎？</strong>
+            <span class="muted">可以，會以情境句型和角色練習為主，例如點餐、問路、住宿、購物、和店員簡單對話。</span>
+          </div>
+          <div class="faq-item">
+            <strong>初階課可以加入 IG 學日文嗎？</strong>
+            <span class="muted">可以作為延伸素材，用來看真實生活句子。但初階課仍會保留《大家的日本語》的主線。</span>
+          </div>
+          <div class="faq-item">
+            <strong>如果上到一半發現課程方向變了怎麼辦？</strong>
+            <span class="muted">可以和老師討論。因為每個學生需求不同，老師會依實際狀況調整課程建議與報價。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="cta">
+      <div class="section-inner">
+        <div>
+          <p class="eyebrow">Start</p>
+          <h2>先試 15 分鐘，看看這種講法你聽不聽得懂。</h2>
+          <p>表單會先了解你的程度、為什麼喜歡日文、想學哪一類日文，以及有沒有想用的教材。小課後再一起細談課程方向、上課頻率與適合你的預算。</p>
+        </div>
+        <a class="button" href="#apply">填寫預約表單</a>
+      </div>
+    </section>
+
+    <section id="apply" class="apply-section" aria-labelledby="apply-title">
+      <div class="section-inner">
+        <div class="apply-intro">
+          <p class="eyebrow">Trial lesson</p>
+          <h2 id="apply-title">試上申請</h2>
+          <p>不用註冊或登入。填寫後會寄確認信到你的 Gmail；老師會另行聯繫確認試上時段。</p>
+          <p class="apply-note">請留下正確資訊，方便黑犬聯絡你。表單不會要求密碼。</p>
+        </div>
+        <form id="trial-form" class="trial-form" method="post">
+          <div class="trial-grid">
+            <label class="trial-field"><span>怎麼稱呼你？ *</span><input name="name" required maxlength="80" autocomplete="name" placeholder="你的名字或暱稱"></label>
+            <label class="trial-field"><span>Gmail 帳號 *</span><input name="email" type="email" required maxlength="120" autocomplete="email" inputmode="email" pattern="[A-Za-z0-9._%+\-]+@gmail\.com" title="請填寫 @gmail.com 信箱" placeholder="name@gmail.com"><small>確認信會寄到這個信箱。</small></label>
+            <label class="trial-field"><span>目前日文程度 *</span><select name="level" required><option value="">請選擇</option><option>沒有學過</option><option>50 音程度</option><option>初級／N5</option><option>初中級／N4</option><option>中級／N3</option><option>中高級／N2</option><option>高級／N1</option><option>不確定，想讓老師幫我評估</option></select></label>
+            <label class="trial-field"><span>希望上課的時間 *</span><input name="availability" required maxlength="200" placeholder="例如：平日晚上、週六下午"></label>
+            <label class="trial-field wide"><span>為什麼想學日文？ *</span><textarea name="reason" required maxlength="1200" rows="3" placeholder="例如：喜歡動漫、追星、旅遊或日本文化"></textarea></label>
+            <label class="trial-field wide"><span>學日文的目標是什麼？ *</span><textarea name="goal" required maxlength="1200" rows="3" placeholder="例如：想考 N3、想在日本旅行時能自然溝通"></textarea></label>
+            <label class="trial-field wide"><span>你希望可以從課程中學到什麼？ *</span><textarea name="learningWish" required maxlength="1200" rows="3" placeholder="例如：搞懂文法、練習會話、閱讀或開心學日文"></textarea></label>
+            <div class="trial-field wide"><fieldset><legend>從哪邊知道黑犬？ *</legend><div class="choice-grid"><label><input type="radio" name="source" value="黑犬星球痞客邦" required>黑犬星球痞客邦</label><label><input type="radio" name="source" value="學日文大小事 podcast">學日文大小事 podcast</label><label><input type="radio" name="source" value="黑犬星球 IG">黑犬星球 IG</label><label><input type="radio" name="source" value="Threads">Threads</label><label><input type="radio" name="source" value="其他">其他</label></div></fieldset></div>
+            <label class="trial-field wide" id="other-source-field" hidden><span>其他來源 *</span><input name="otherSource" maxlength="120" placeholder="請告訴我們從哪裡知道黑犬"></label>
+            <label class="trial-field"><span>方便聯絡的 IG 帳號（選填）</span><input name="instagram" maxlength="120" placeholder="@你的帳號"></label>
+            <label class="trial-field"><span>其他想跟黑犬說的話（選填）</span><textarea name="message" maxlength="1200" rows="3"></textarea></label>
+          </div>
+          <div class="trial-honeypot" aria-hidden="true"><label>請勿填寫此欄 <input name="website" tabindex="-1" autocomplete="off"></label></div>
+          <div class="trial-actions"><p>資料只用於安排試上及聯繫，保存在黑犬星球的 Google 試算表。送出後會寄確認信；如需更改試上時間，請私訊「黑犬星球」IG。</p><button class="button" type="submit">送出試上申請</button></div>
+          <p id="trial-error" class="trial-error" role="alert" hidden></p>
+        </form>
+      </div>
+    </section>
   </main>
-  <footer><span>Mio 日文教室</span><span>從你想說的日文開始。</span></footer>
-  <dialog id="auth-dialog" aria-labelledby="auth-title"><form method="dialog" class="dialog-head"><h2 id="auth-title">登入日文教室</h2><button aria-label="關閉" class="close">×</button></form><p>使用電子郵件登入，繼續申請或查看課程。</p><form id="auth-form"><label>電子郵件 <input name="email" type="email" required autocomplete="email"></label><label>密碼 <input name="password" type="password" required minlength="8" autocomplete="current-password"></label><div class="dialog-actions"><button type="submit" data-auth-action="signin" class="button primary">登入</button><button type="button" data-auth-action="signup" class="button secondary">註冊新帳號</button></div></form><p id="auth-message" class="message" role="status" hidden></p></dialog>
+
+  <footer>
+    <div class="section-inner">
+      <span>黑犬星球｜線上 1 對 1 日文課</span>
+      <span>課程報價依學生程度、目標與教材需求個別提供</span>
+    </div>
+  </footer>
 </body>
 </html>
