@@ -64,7 +64,7 @@ async function refreshSession(user) {
       locked.replaceChildren(make("h3", "", "請先驗證電子郵件"), make("p", "", "驗證信已寄到你的信箱。完成驗證後，按下方按鈕繼續。"));
       const refresh = make("button", "button primary", "已驗證，重新檢查"); refresh.type = "button";
       refresh.addEventListener("click", async () => {
-        try { await state.firebaseAuth.reload(user); await refreshSession(state.auth.currentUser); }
+        try { await state.firebaseAuth.reload(user); await user.getIdToken(true); await refreshSession(state.auth.currentUser); }
         catch { showMessage($("#apply-message"), "驗證狀態暫時無法更新。", true); }
       });
       locked.append(refresh);
