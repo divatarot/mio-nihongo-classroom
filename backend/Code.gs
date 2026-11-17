@@ -6,7 +6,7 @@ const LEVELS = [
   '沒有學過', '50 音程度', '初級／N5', '初中級／N4', '中級／N3',
   '中高級／N2', '高級／N1', '不確定，想讓老師幫我評估'
 ];
-const SOURCES = ['黑犬星球痞客邦', '學日文大小事 podcast', '黑犬星球 IG', 'Threads', '其他'];
+const SOURCES = ['黑犬星球痞客邦', '學日文大小事podcast', '黑犬星球ＩＧ', 'Threads', '其他'];
 const SITE_URL = 'https://divatarot.github.io/mio-nihongo-classroom/';
 
 function setup() {
