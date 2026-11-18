@@ -7,7 +7,8 @@ const LEVELS = [
   '中高級／N2', '高級／N1', '不確定，想讓老師幫我評估'
 ];
 const SOURCES = ['黑犬星球痞客邦', '學日文大小事podcast', '黑犬星球ＩＧ', 'Threads', '其他'];
-const SITE_URL = 'https://divatarot.github.io/mio-nihongo-classroom/';
+const SITE_URL = 'https://blackdog-japanese-lessons.pages.dev/';
+const DAILY_LIMIT = 50;
 
 function setup() {
   const properties = PropertiesService.getScriptProperties();
@@ -46,7 +47,8 @@ function doPost(e) {
     message: value(params.message, 1200)
   };
   if (!valid(data)) return page('表單資料有誤，請返回檢查後再送出。', true);
-  const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+  const properties = PropertiesService.getScriptProperties();
+  const sheetId = properties.getProperty('SHEET_ID');
   if (!sheetId) return page('申請服務暫時無法使用，請稍後再試。', true);
   const lock = LockService.getScriptLock();
   try {
@@ -55,6 +57,10 @@ function doPost(e) {
     const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, data.email);
     const cacheKey = 'recent-' + Utilities.base64EncodeWebSafe(digest).slice(0, 40);
     if (cache.get(cacheKey)) return page('這個 Gmail 剛送出過申請，請先查看確認信。', false);
+    const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyyMMdd');
+    const dailyCount = properties.getProperty('DAY_COUNT_DATE') === today
+      ? Number(properties.getProperty('DAY_COUNT') || 0) : 0;
+    if (dailyCount >= DAILY_LIMIT) return page('今日申請已達上限，請直接 IG 私訊「黑犬星球」聯繫。', true);
     const sheet = SpreadsheetApp.openById(sheetId).getSheets()[0];
     const source = data.source === '其他' ? `其他：${data.otherSource}` : data.source;
     sheet.appendRow([
@@ -64,6 +70,7 @@ function doPost(e) {
       safeCell(data.message), '待寄送'
     ]);
     const row = sheet.getLastRow();
+    properties.setProperties({ DAY_COUNT_DATE: today, DAY_COUNT: String(dailyCount + 1) });
     cache.put(cacheKey, '1', 600);
     let sent = false;
     try {
