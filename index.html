@@ -775,26 +775,10 @@
     .apply-intro h2 { margin-bottom: 12px; }
     .apply-intro p { color: var(--muted); }
     .apply-note { margin-top: 12px; font-size: .92rem; }
-    .trial-form { max-width: 850px; padding: clamp(22px, 4vw, 40px); border: 1px solid var(--line); border-radius: 16px; background: var(--white); box-shadow: var(--shadow); }
-    .trial-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-    .trial-field { display: grid; gap: 8px; align-content: start; }
-    .trial-field.wide { grid-column: 1 / -1; }
-    .trial-field > span, .trial-field legend { font-weight: 700; }
-    .trial-field small { color: var(--muted); }
-    .trial-field input, .trial-field select, .trial-field textarea { width: 100%; border: 1px solid var(--line); border-radius: 8px; padding: 12px 13px; color: var(--ink); background: #fff; font: inherit; }
-    .trial-field textarea { resize: vertical; min-height: 100px; }
-    .trial-field input:focus, .trial-field select:focus, .trial-field textarea:focus { outline: 2px solid var(--green); outline-offset: 1px; }
-    .trial-field fieldset { border: 0; padding: 0; margin: 0; }
-    .choice-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
-    .choice-grid label { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 100px; cursor: pointer; }
-    .choice-grid input { width: auto; margin: 0; accent-color: var(--green); }
-    .trial-actions { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .trial-actions p { color: var(--muted); font-size: .9rem; }
-    .trial-error { margin-top: 16px; color: #a92b24; font-weight: 700; }
-    .trial-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-    @media (max-width: 700px) { .trial-grid { grid-template-columns: 1fr; } .trial-field.wide { grid-column: auto; } .trial-actions { align-items: stretch; flex-direction: column; } }
+    .trial-form-link { display: inline-flex; margin: 12px 0 22px; }
+    .google-form-frame { display: block; width: 100%; max-width: 850px; height: 1900px; border: 0; border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
+    @media (max-width: 700px) { .google-form-frame { height: 2150px; } }
   </style>
-  <script defer src="./trial.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -1177,27 +1161,11 @@
         <div class="apply-intro">
           <p class="eyebrow">Trial lesson</p>
           <h2 id="apply-title">試上申請</h2>
-          <p>不用註冊或登入。填寫後會寄確認信到你的 Gmail；老師會另行聯繫確認試上時段。</p>
-          <p class="apply-note">請留下正確資訊，方便黑犬聯絡你。表單不會要求密碼。</p>
+          <p>不用註冊或登入。請在表單的電子郵件欄填寫 Gmail；送出後 Google 表單會自動寄一份回覆副本，老師會另行聯繫確認試上時段。</p>
+          <p class="apply-note">資料只用於安排試上及聯繫，由黑犬星球的 Google 帳號保管。表單不會要求密碼。</p>
         </div>
-        <form id="trial-form" class="trial-form" method="post">
-          <div class="trial-grid">
-            <label class="trial-field"><span>怎麼稱呼你？ *</span><input name="name" required maxlength="80" autocomplete="name" placeholder="你的名字或暱稱"></label>
-            <label class="trial-field"><span>Gmail 帳號 *</span><input name="email" type="email" required maxlength="120" autocomplete="email" inputmode="email" pattern="[A-Za-z0-9._%+\-]+@gmail\.com" title="請填寫 @gmail.com 信箱" placeholder="name@gmail.com"><small>確認信會寄到這個信箱。</small></label>
-            <label class="trial-field"><span>目前日文程度 *</span><select name="level" required><option value="">請選擇</option><option>沒有學過</option><option>50 音程度</option><option>初級／N5</option><option>初中級／N4</option><option>中級／N3</option><option>中高級／N2</option><option>高級／N1</option><option>不確定，想讓老師幫我評估</option></select></label>
-            <label class="trial-field"><span>希望上課的時間 *</span><input name="availability" required maxlength="200" placeholder="例如：平日晚上、週六下午"></label>
-            <label class="trial-field wide"><span>為什麼想學日文？ *</span><textarea name="reason" required maxlength="1200" rows="3" placeholder="例如：喜歡動漫、追星、旅遊或日本文化"></textarea></label>
-            <label class="trial-field wide"><span>學日文的目標是什麼？ *</span><textarea name="goal" required maxlength="1200" rows="3" placeholder="例如：想考 N3、想在日本旅行時能自然溝通"></textarea></label>
-            <label class="trial-field wide"><span>你希望可以從課程中學到什麼？ *</span><textarea name="learningWish" required maxlength="1200" rows="3" placeholder="例如：搞懂文法、練習會話、閱讀或開心學日文"></textarea></label>
-            <div class="trial-field wide"><fieldset><legend>從哪邊知道黑犬？ *</legend><div class="choice-grid"><label><input type="radio" name="source" value="黑犬星球痞客邦" required>黑犬星球痞客邦</label><label><input type="radio" name="source" value="學日文大小事podcast">學日文大小事podcast</label><label><input type="radio" name="source" value="黑犬星球ＩＧ">黑犬星球ＩＧ</label><label><input type="radio" name="source" value="Threads">Threads</label><label><input type="radio" name="source" value="其他">其他</label></div></fieldset></div>
-            <label class="trial-field wide" id="other-source-field" hidden><span>其他來源 *</span><input name="otherSource" maxlength="120" placeholder="請告訴我們從哪裡知道黑犬"></label>
-            <label class="trial-field"><span>方便聯絡的 IG 帳號（選填）</span><input name="instagram" maxlength="120" placeholder="@你的帳號"></label>
-            <label class="trial-field"><span>其他想跟黑犬說的話（選填）</span><textarea name="message" maxlength="1200" rows="3"></textarea></label>
-          </div>
-          <div class="trial-honeypot" aria-hidden="true"><label>請勿填寫此欄 <input name="website" tabindex="-1" autocomplete="off"></label></div>
-          <div class="trial-actions"><p>資料只用於安排試上及聯繫，保存在黑犬星球的 Google 試算表。送出後會寄確認信；如需更改試上時間，請私訊「黑犬星球」IG。</p><button class="button" type="submit">送出試上申請</button></div>
-          <p id="trial-error" class="trial-error" role="alert" hidden></p>
-        </form>
+        <a class="button trial-form-link" href="https://docs.google.com/forms/d/e/1FAIpQLSebP49dSdqlEI1WH5Nd7KZwYuxhdrafJ_IhHvDjGUvb2KHJDQ/viewform" target="_blank" rel="noopener noreferrer">在新分頁填寫試上申請</a>
+        <iframe class="google-form-frame" title="黑犬星球日文試上申請表" src="https://docs.google.com/forms/d/e/1FAIpQLSebP49dSdqlEI1WH5Nd7KZwYuxhdrafJ_IhHvDjGUvb2KHJDQ/viewform?embedded=true" loading="lazy">載入 Google 表單中…</iframe>
       </div>
     </section>
   </main>
