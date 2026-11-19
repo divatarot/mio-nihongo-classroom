@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 270" role="img" aria-labelledby="title">
+  <title id="title">微笑的黑犬</title>
+  <path d="M49 107Q25 22 79 18Q113 18 125 83Q158 65 195 83Q209 13 252 20Q296 38 268 112Q288 136 271 190Q247 248 160 249Q73 249 48 190Q33 140 49 107Z" fill="#352b27"/>
+  <path d="M111 148Q128 119 161 129Q195 119 211 148Q228 194 194 218Q164 240 130 222Q94 203 111 148Z" fill="#fff3e6"/>
+  <ellipse cx="111" cy="151" rx="7" ry="10" fill="#fff3e6"/>
+  <ellipse cx="211" cy="151" rx="7" ry="10" fill="#fff3e6"/>
+  <ellipse cx="161" cy="168" rx="12" ry="8" fill="#352b27"/>
+  <path d="M161 175Q158 194 141 191M161 175Q167 194 183 190" fill="none" stroke="#352b27" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="96" cy="184" rx="19" ry="8" fill="#df9d8c" opacity=".75"/>
+  <ellipse cx="224" cy="184" rx="19" ry="8" fill="#df9d8c" opacity=".75"/>
+  <path d="M111 247Q132 263 160 262Q191 262 209 246" fill="none" stroke="#9b614f" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="161" cy="259" r="11" fill="#f1d7a8"/>
+  <path d="M156 259h10M161 254v10" stroke="#9b614f" stroke-width="2"/>
+  <path d="M39 62 22 54m10 30-19 6M281 59l17-11m-6 34 17 7" stroke="#bf8d73" stroke-width="4" stroke-linecap="round"/>
+</svg>
