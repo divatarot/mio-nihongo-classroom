@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <title>黑犬星球｜線上 1 對 1 日文課｜初學到 N2 日文學習</title>
-  <meta name="description" content="黑犬星球提供線上 1 對 1 日文課，適合初學、N5-N2、旅遊日文與追星日文。先填表預約 15 分鐘免費小課，實際感受老師怎麼把日文講懂，再依需求和預算討論課程。">
+  <title>黑犬星球｜陪你慢慢學日文・線上 1 對 1 日文課</title>
+  <meta name="description" content="こんにちは，我是黑犬。從五十音、大家的日本語、N5–N2，到旅遊和追星日文，陪你把卡住的地方慢慢弄懂。先填表預約 15 分鐘免費小課。">
   <meta name="robots" content="index, follow">
-  <meta name="theme-color" content="#315f52">
+  <meta name="theme-color" content="#9b614f">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="黑犬星球｜線上 1 對 1 日文課">
-  <meta property="og:description" content="適合初學到 N2。先填表預約 15 分鐘免費小課，實際感受老師怎麼帶你把日文學懂。">
+  <meta property="og:title" content="黑犬星球｜陪你慢慢學日文">
+  <meta property="og:description" content="先來上 15 分鐘免費小課，看看我們適不適合一起學日文。">
   <meta property="og:locale" content="zh_TW">
   <script type="application/ld+json">
     {
@@ -776,24 +776,78 @@
     .apply-intro p { color: var(--muted); }
     .apply-note { margin-top: 12px; font-size: .92rem; }
     .trial-form-link { display: inline-flex; margin: 12px 0 22px; }
-    .google-form-frame { display: block; width: 100%; max-width: 850px; height: 1900px; border: 0; border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
-    @media (max-width: 700px) { .google-form-frame { height: 2150px; } }
+    .google-form-frame { display: block; width: 100%; max-width: 850px; height: 3800px; border: 0; border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
+    @media (max-width: 700px) { .google-form-frame { height: 4250px; } }
+
+    /* 黑犬的筆記本：奶油紙色、陶土色與手寫感留白。 */
+    :root { --ink:#342b27; --muted:#6d615a; --line:#dfcbb9; --paper:#fffaf3; --soft:#f8eee1; --white:#fffdf9; --green:#9b614f; --green-soft:#f2d8c8; --red:#a75f4c; --gold:#b88168; --shadow:0 16px 42px rgba(77,49,35,.09); --radius:16px; }
+    body { line-height:1.8; }
+    h1,h2,h3 { font-family:"Iowan Old Style","Songti TC","Noto Serif TC",serif; letter-spacing:.015em; }
+    h1 { font-size:clamp(2.7rem,5vw,4rem); line-height:1.25; }
+    h2 { line-height:1.32; }
+    .topbar { background:rgba(255,250,243,.94); border-color:var(--line); }
+    .button { background:var(--green); border-color:var(--green); box-shadow:0 9px 22px rgba(121,70,55,.18); }
+    .button:hover { background:#794637; border-color:#794637; }
+    .button.secondary { border-color:var(--line); }
+    .hero { padding:70px 0 82px; background:radial-gradient(circle at 86% 18%,#f8e4d4 0 18%,transparent 44%),var(--paper); }
+    .hero-grid { grid-template-columns:minmax(0,1fr) minmax(340px,.9fr); gap:64px; }
+    .hero .eyebrow { font-family:"Iowan Old Style","Songti TC",serif; font-style:italic; font-size:1.35rem; text-transform:none; letter-spacing:.02em; }
+    .hero .eyebrow::before { display:none; }
+    .lead { font-size:1.18rem; line-height:1.9; }
+    .hero-footnote { color:var(--muted); font-size:.92rem; margin:28px 0 0; }
+    .study-visual { display:grid; place-items:center; min-height:560px; }
+    .hero-halo { position:absolute; width:88%; aspect-ratio:1; border-radius:50%; background:#f2dac6; top:3%; right:0; }
+    .hero-halo::before { content:""; position:absolute; inset:-20px; border:2px dashed #cda98e; border-radius:50%; }
+    .teacher-note { position:relative; z-index:1; width:min(390px,86%); padding:30px 28px 23px; background:var(--white); border:1px solid #e6d8c9; border-radius:8px; transform:rotate(3deg); box-shadow:var(--shadow); }
+    .teacher-note::before { content:""; position:absolute; width:88px; height:29px; top:-17px; left:40%; background:rgba(208,160,126,.38); transform:rotate(-3deg); }
+    .dog-illustration { display:block; width:235px; max-width:100%; height:auto; margin:0 auto 8px; }
+    .japanese-note { display:block; color:var(--green); font-family:"Iowan Old Style","Songti TC",serif; font-size:1.85rem; }
+    .teacher-note strong { display:block; margin-top:5px; font-family:"Iowan Old Style","Songti TC",serif; font-size:1.48rem; line-height:1.65; }
+    .signature { display:block; margin-top:14px; text-align:right; color:var(--green); }
+    .teacher-letter { background:#f8eee1; }
+    .letter-grid { display:grid; grid-template-columns:.78fr 1.22fr; gap:75px; align-items:start; }
+    .letter-paper { position:relative; padding:36px 42px; background:var(--white); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); font-size:1.08rem; }
+    .letter-paper::before { content:"✳"; position:absolute; top:-25px; right:30px; color:var(--green); font-size:2rem; }
+    .letter-paper p:last-child { margin-bottom:0; }
+    .letter-sign { text-align:right; color:var(--green); font-family:"Iowan Old Style","Songti TC",serif; font-size:1.3rem; }
+    .band { background:var(--paper); }
+    .cards { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .card { min-height:290px; padding:30px; border-radius:18px; background:var(--white); }
+    .tag { background:var(--green-soft); color:#794637; }
+    .route { border:0; border-bottom:1px dashed var(--line); border-radius:0; background:transparent; }
+    .notice { background:#f7e5d8; border-color:var(--green); border-radius:14px; }
+    .pricing { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .price-card,.price-card.featured { padding:27px; border-color:var(--line); border-radius:16px; background:var(--white); box-shadow:none; }
+    .price { color:#794637; font-size:30px; }
+    .rule-box { border-radius:16px; }
+    .rule-box:nth-child(2),.rule-box:nth-child(3) { background:#fffaf3; }
+    .steps { gap:0; border-top:1px solid var(--line); }
+    .step { min-height:0; border:0; border-right:1px solid var(--line); border-radius:0; background:transparent; }
+    .step:last-child { border-right:0; }
+    .faq-item { border-radius:14px; }
+    .cta { background:#687965; }
+    .cta .button { color:#794637; }
+    .apply-section { background:#f8eee1; }
+    .apply-intro h2 { font-size:clamp(2.2rem,4vw,3.7rem); }
+    .trial-form-link { background:var(--green); }
+    footer { background:#342b27; }
+    @media(max-width:980px) { .hero-grid,.letter-grid { grid-template-columns:1fr; gap:36px; } .study-visual { min-height:470px; } .steps { grid-template-columns:repeat(2,minmax(0,1fr)); } .step:nth-child(2) { border-right:0; } }
+    @media(max-width:640px) { .nav .button { min-height:40px; padding:8px 11px; font-size:.82rem; white-space:nowrap; } .brand { font-size:.9rem; } .hero { padding:42px 0 54px; } .hero-grid { gap:22px; } .study-visual { min-height:425px; } .teacher-note { padding:22px; width:85%; } .dog-illustration { width:195px; } .japanese-note { font-size:1.46rem; } .letter-paper { padding:27px 24px; } .cards,.pricing,.steps { grid-template-columns:1fr; } .card { min-height:0; } .step { border-right:0; border-bottom:1px solid var(--line); } .step:last-child { border-bottom:0; } .google-form-frame { height:4250px; } }
   </style>
 </head>
 <body>
   <header class="topbar">
     <nav class="nav" aria-label="主要導覽">
       <a class="brand" href="#top" aria-label="回到首頁">
-        <span class="mark">日</span>
-        <span>黑犬星球｜線上日文課</span>
+        <span class="mark">犬</span>
+        <span>黑犬星球｜日文教室</span>
       </a>
       <div class="navlinks">
-        <a href="#courses">課程</a>
-        <a href="#process">免費小課</a>
-        <a href="#pricing">報價方式</a>
-        <a href="#rules">教材安排</a>
+        <a href="#about">認識課堂</a>
+        <a href="#courses">可以學什麼</a>
+        <a href="#pricing">課程費用</a>
       </div>
-      <a class="button" href="#apply">填表預約</a>
+      <a class="button" href="#apply">預約免費小課 ↗</a>
     </nav>
   </header>
 
@@ -801,42 +855,32 @@
     <section class="hero">
       <div class="hero-inner hero-grid">
         <div>
-          <p class="eyebrow">Online Japanese Lesson</p>
-          <h1>日文卡住的地方，有人慢慢講到你懂。</h1>
-          <p class="lead">想從《大家的日本語》打底、準備 N5-N2、學旅遊日文，或用追星、IG 貼文、喜歡的內容練日文，都可以先來 15 分鐘免費小課。老師會真的帶你學一小段，再依你的程度、目標和預算討論適合的上課方式。</p>
+          <p class="eyebrow">こんにちは、我是黑犬 🐾</p>
+          <h1>日文這件事，<br>我們慢慢來就好。</h1>
+          <p class="lead">第一次學日文，不知道從哪裡開始？學過一陣子，卻總被助詞和文法絆住？我會陪你從現在的位置出發，把句子拆開、練習開口，慢慢找到適合你的學法。</p>
           <div class="hero-actions">
-            <a class="button" href="#apply">填表預約免費小課</a>
-            <a class="button secondary" href="#courses">先看課程方向</a>
+            <a class="button" href="#apply">來聊聊你的日文 ↗</a>
+            <a class="button secondary" href="#about">先看看怎麼上課</a>
           </div>
-          <div class="proof-row" aria-label="課程特色">
-            <div class="proof">
-              <strong>好懂</strong>
-              <span>把文法、助詞和句子拆成你聽得懂的說法。</span>
-            </div>
-            <div class="proof">
-              <strong>先試上</strong>
-              <span>15 分鐘免費小課會實際教，不只是諮詢。</span>
-            </div>
-            <div class="proof">
-              <strong>可討論</strong>
-              <span>依你的需求和預算，安排比較適合的教材與堂數。</span>
-            </div>
-          </div>
+          <p class="hero-footnote">15 分鐘免費小課・線上 1 對 1・初學到 N2 都歡迎</p>
         </div>
 
-        <div class="study-visual" aria-label="日文學習教材視覺">
-          <div class="desk-photo"></div>
-          <div class="notebook">
-            <h3>一堂課大概會有什麼</h3>
-            <div class="checkline">文法或句型拆解</div>
-            <div class="checkline">例句、替換練習與作業</div>
-            <div class="checkline">依學生程度調整節奏</div>
-          </div>
-          <div class="mini-card">
-            <b>1:1</b>
-            <span>線上授課，每堂 60 分鐘</span>
+        <div class="study-visual" aria-label="黑犬的手繪小卡片">
+          <div class="hero-halo"></div>
+          <div class="teacher-note">
+            <img class="dog-illustration" src="./blackdog.svg" alt="微笑的黑犬手繪插畫">
+            <span class="japanese-note">いっしょに、ゆっくり。</span>
+            <strong>今天看不懂的句子，<br>我們一起慢慢弄懂。</strong>
+            <span class="signature">— 黑犬 🐾</span>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section id="about" class="teacher-letter">
+      <div class="section-inner letter-grid">
+        <div><p class="eyebrow">給正在學日文的你</p><h2>先從你卡住的地方開始。</h2><p class="muted">不需要一開始就很厲害，也不用把學習目標想得很完整。</p></div>
+        <div class="letter-paper"><p>嗨，我是黑犬。</p><p>有的學生想把《大家的日本語》好好學完，有的想在日本旅行時敢開口；也有人想看懂喜歡的貼文、日劇或偶像說的話。你想學的日文，可以從你的生活開始。</p><p>課堂上，我會先聽聽你目前會什麼、哪裡常常卡住，再用例句把文法和句子講清楚。你可以問、可以試著說、也可以說「我還是不懂」，我們再換一種方式。</p><p>如果你還不確定自己適不適合，先來上 15 分鐘免費小課就好。我們真的學一小段日文，再聊聊接下來怎麼安排。</p><p class="letter-sign">黑犬より 🐾</p></div>
       </div>
     </section>
 
@@ -844,17 +888,17 @@
       <div class="section-inner">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Courses</p>
-            <h2>常見課程方向</h2>
+            <p class="eyebrow">一緒に勉強しよう</p>
+            <h2>你的日文，可以從這裡開始。</h2>
           </div>
-          <p>你不用先很會日文，也不用把目標想得很完整。可以從課本、檢定、旅遊、追星或你喜歡的內容開始，老師會把它整理成你目前學得動的日文。</p>
+          <p>不用先選好「課程名稱」。告訴我你現在想學什麼，我們會一起找出適合的起點。</p>
         </div>
 
         <div class="cards">
           <article class="card">
             <span class="tag">入門到初級</span>
             <h3>初階日文打底</h3>
-            <p>以《大家的日本語》為主軸，適合五十音後、剛開始建立文法與句型的人。</p>
+            <p>如果你剛學完五十音，或想把基礎重新學穩，我們就從《大家的日本語》一步一步來。</p>
             <ul class="list">
               <li>單字、句型、助詞與動詞變化</li>
               <li>課本例句延伸成生活情境</li>
@@ -865,7 +909,7 @@
           <article class="card">
             <span class="tag">N5-N2</span>
             <h3>檢定文法與閱讀</h3>
-            <p>適合想準備 JLPT，或學過但文法容易混在一起的學生。</p>
+            <p>學過一點卻總把文法搞混？我們會一起拆句子、比較用法，也整理日檢常遇到的題型。</p>
             <ul class="list">
               <li>文法比較、題型練習與錯題整理</li>
               <li>閱讀拆句，找出句子主幹</li>
@@ -876,7 +920,7 @@
           <article class="card">
             <span class="tag">生活口說</span>
             <h3>旅遊與生活日文</h3>
-            <p>適合想把學過的句型用在點餐、交通、住宿、購物與簡單交流。</p>
+            <p>想去日本時能點餐、問路、搭車，也敢試著和店員說幾句話？可以從這些情境練起。</p>
             <ul class="list">
               <li>情境句型、角色練習與常用表達</li>
               <li>可加入 IG 學日文或學生感興趣素材</li>
@@ -887,7 +931,7 @@
           <article class="card">
             <span class="tag">興趣主題</span>
             <h3>追星日文</h3>
-            <p>適合想看懂偶像貼文、直播片段、歌詞短句、訪談和活動常見用語的學生。</p>
+            <p>喜歡的偶像、作品和貼文，也能成為教材。帶著你想看懂的句子來，我們一起拆開看。</p>
             <ul class="list">
               <li>用你喜歡的內容補充課外教材</li>
               <li>拆解貼文、留言、歌詞與訪談句子</li>
@@ -901,9 +945,9 @@
     <section>
       <div class="section-inner split">
         <div>
-          <p class="eyebrow">Lesson Map</p>
-          <h2>一堂課大概怎麼進行？</h2>
-          <p class="muted">實際內容會依學生程度調整，但上課不會只是聊天，也不是把課本唸完而已。老師會先抓出你聽不懂或用不出來的地方，再用例句和練習帶你消化。</p>
+          <p class="eyebrow">一堂 60 分鐘的課</p>
+          <h2>有人陪你想，<br>也陪你練習。</h2>
+          <p class="muted">上課不會只是把課本唸完。內容會跟著你的程度調整；需要時也可以加入旅遊句子、IG 貼文或你自己帶來的短文。</p>
           <div class="course-map">
             <div class="route">
               <b>00-10 min</b>
@@ -948,10 +992,10 @@
       <div class="section-inner">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Quotation</p>
-            <h2>先看大概行情，不用一開始做很大決定。</h2>
+          <p class="eyebrow">課程費用</p>
+            <h2>先看大概區間，再一起討論。</h2>
           </div>
-          <p>線上 1 對 1 日文課常見行情約落在 NT$600-900 / 小時。這裡會先用比較好入門的方式報價，實際費用可依程度、教材、備課量、堂數和預算討論；不用一開始就買大課包。</p>
+          <p>以下是線上 1 對 1、每堂 60 分鐘的參考費用。實際內容與費用會依程度、教材和備課需求討論；不用先買大課包。</p>
         </div>
 
         <div class="pricing">
@@ -1004,8 +1048,8 @@
       <div class="section-inner">
         <div class="section-head">
           <div>
-            <p class="eyebrow">Materials</p>
-            <h2>想學課本外的內容，也可以安排。</h2>
+            <p class="eyebrow">喜歡的內容也能變教材</p>
+            <h2>想學課本外的內容，也可以。</h2>
           </div>
           <p>有些人想照課本穩穩打底，有些人想看貼文、旅遊句子、偶像內容或自己喜歡的文章。兩種都可以，只是課程安排方式不同。</p>
         </div>
@@ -1044,68 +1088,32 @@
       </div>
     </section>
 
-    <section id="fit" class="band">
-      <div class="section-inner">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">Best Fit</p>
-            <h2>你可能會很適合這樣的上課方式。</h2>
-          </div>
-          <p>這堂課不是要你一開始就很會，而是陪你把卡住的地方整理清楚，再慢慢把日文用出來。</p>
-        </div>
-
-        <div class="fit-grid">
-          <div class="fit good">
-            <h3>很適合這樣的學生</h3>
-            <ul class="list">
-              <li>初學者，想把文法從頭學穩</li>
-              <li>學過一點，但助詞、動詞變化一直混亂</li>
-              <li>準備 N5-N2，需要有人幫忙整理盲點</li>
-              <li>想用日文旅遊、看懂簡單貼文、追星內容或生活句子</li>
-              <li>需要老師用中文解釋清楚，而不是只用日文聊天</li>
-            </ul>
-          </div>
-
-          <div class="fit limit">
-            <h3>如果你有這些目標，先聊聊</h3>
-            <ul class="list">
-              <li>N2 以上高階衝刺或 N1 專門準備</li>
-              <li>商務簡報、面試、工作文件等明確任務</li>
-              <li>想要全日文自由會話練習</li>
-              <li>想大量翻譯文章、論文或公司文件</li>
-              <li>需要特別密集的發音或口說訓練</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section id="process">
       <div class="section-inner">
         <div class="section-head">
           <div>
-            <p class="eyebrow">How It Works</p>
-            <h2>預約流程</h2>
+            <p class="eyebrow">先見一面吧</p>
+            <h2>從填表到第一次上課。</h2>
           </div>
-          <p>你不用先把需求整理得很完美。先填一份簡單表單，老師會用免費小課了解你的程度和學習方向，再一起討論適合的課程。</p>
+          <p>不用先把需求整理得很完美。勾選最接近你的答案，想補充的再寫下來；我會從這裡認識你的日文。</p>
         </div>
 
         <div class="steps">
           <div class="step">
-            <strong>填簡單表單</strong>
-            <span>目前程度、為什麼喜歡日文、想學哪一類日文、是否有想用的教材。</span>
+            <strong>跟我說說你的日文</strong>
+            <span>目前程度、學習原因、想達成的目標和方便的上課時間。</span>
           </div>
           <div class="step">
-            <strong>15 分鐘免費小課</strong>
-            <span>不是只聊天，老師會實際帶你看一小段日文，讓你感受上課方式。</span>
+            <strong>來上 15 分鐘免費小課</strong>
+            <span>我們會真的學一小段日文，感受一下上課的節奏。</span>
           </div>
           <div class="step">
-            <strong>細談學習方向</strong>
-            <span>依你的程度、興趣、時間和目標，討論適合的主線與教材。</span>
+            <strong>一起找適合的方向</strong>
+            <span>聊聊你的程度、喜歡的內容，以及想怎麼安排時間。</span>
           </div>
           <div class="step">
-            <strong>提供個別報價</strong>
-            <span>每位學生需求不同，老師會再提供適合你的課程方案與費用。</span>
+            <strong>確認課程與費用</strong>
+            <span>你想繼續上課，我們再討論教材、頻率與費用。</span>
           </div>
         </div>
       </div>
@@ -1115,8 +1123,8 @@
       <div class="section-inner">
         <div class="section-head">
           <div>
-            <p class="eyebrow">FAQ</p>
-            <h2>常見問題</h2>
+            <p class="eyebrow">你可能也想問</p>
+            <h2>上課前的小問題。</h2>
           </div>
         </div>
 
@@ -1148,23 +1156,23 @@
     <section id="contact" class="cta">
       <div class="section-inner">
         <div>
-          <p class="eyebrow">Start</p>
-          <h2>先試 15 分鐘，看看這種講法你聽不聽得懂。</h2>
-          <p>表單會先了解你的程度、為什麼喜歡日文、想學哪一類日文，以及有沒有想用的教材。小課後再一起細談課程方向、上課頻率與適合你的預算。</p>
+          <p class="eyebrow">先試一次就好</p>
+          <h2>先試 15 分鐘，<br>看看我們適不適合一起學。</h2>
+          <p>不是只有諮詢。我會真的帶你學一小段日文，再聽聽你的目標、時間和想問的事。</p>
         </div>
-        <a class="button" href="#apply">填寫預約表單</a>
+        <a class="button" href="#apply">來預約免費小課 ↗</a>
       </div>
     </section>
 
     <section id="apply" class="apply-section" aria-labelledby="apply-title">
       <div class="section-inner">
         <div class="apply-intro">
-          <p class="eyebrow">Trial lesson</p>
-          <h2 id="apply-title">試上申請</h2>
-          <p>不用註冊或登入。請在表單的電子郵件欄填寫 Gmail；送出後 Google 表單會自動寄一份回覆副本，老師會另行聯繫確認試上時段。</p>
+          <p class="eyebrow">お会いできるのを楽しみにしています。</p>
+          <h2 id="apply-title">跟我說說你的日文吧。</h2>
+          <p>勾選最接近你的答案就好，可以複選，也能在「其他」自由補充。填好後我會再和你確認試上時間。這份表單不用註冊登入，請填寫常收信的 Gmail。</p>
           <p class="apply-note">資料只用於安排試上及聯繫，由黑犬星球的 Google 帳號保管。表單不會要求密碼。</p>
         </div>
-        <a class="button trial-form-link" href="https://docs.google.com/forms/d/e/1FAIpQLSebP49dSdqlEI1WH5Nd7KZwYuxhdrafJ_IhHvDjGUvb2KHJDQ/viewform" target="_blank" rel="noopener noreferrer">在新分頁填寫試上申請</a>
+        <a class="button trial-form-link" href="https://docs.google.com/forms/d/e/1FAIpQLSebP49dSdqlEI1WH5Nd7KZwYuxhdrafJ_IhHvDjGUvb2KHJDQ/viewform" target="_blank" rel="noopener noreferrer">另開表單填寫 ↗</a>
         <iframe class="google-form-frame" title="黑犬星球日文試上申請表" src="https://docs.google.com/forms/d/e/1FAIpQLSebP49dSdqlEI1WH5Nd7KZwYuxhdrafJ_IhHvDjGUvb2KHJDQ/viewform?embedded=true" loading="lazy">載入 Google 表單中…</iframe>
       </div>
     </section>
@@ -1172,8 +1180,8 @@
 
   <footer>
     <div class="section-inner">
-      <span>黑犬星球｜線上 1 對 1 日文課</span>
-      <span>課程報價依學生程度、目標與教材需求個別提供</span>
+      <span>黑犬星球｜一點一點，把喜歡的日文學成自己的日文。</span>
+      <span>如需更改試上時間，請 IG 私訊「黑犬星球」。</span>
     </div>
   </footer>
 </body>
