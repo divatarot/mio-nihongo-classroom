@@ -8,6 +8,14 @@ Google 表單的「收集電子郵件地址」設為「由作答者手動輸入�
 
 舊的 Apps Script 程式 `backend/Code.gs` 和 `trial.js` 是未啟用的草稿，不在網頁載入或 Cloudflare Pages 上傳內容中。自訂 Apps Script 沒有取得 Google 權限，也沒有 Web App 部署。
 
+## 網站數據
+
+Google Analytics 4 資源「黑犬星球｜日文課網站」的網站串流使用評估 ID `G-RDD6QKRP00`。頁面瀏覽及平均參與時間由 GA4 統計；站內導覽、試上按鈕、Podcast 連結及另開表單連結使用 `data-ga-event` 自訂點擊事件。試上區首次進入畫面時會送出 `view_trial_section`。首頁設定的 Google 信號及廣告個人化旗標均關閉。
+
+報表可在 Analytics 的「報表」查看瀏覽、參與度及事件。Podcast 單集說明建議使用 `https://blackdog-japanese-lessons.pages.dev/?utm_source=firstory&utm_medium=podcast&utm_campaign=trial_lesson`，以便區分來自節目的流量。GA4 的平均參與時間是頁面在前景獲得使用者參與的時間，並非純粹開著分頁的時間。
+
+Google 表單嵌入於跨網域 iframe，網站的 GA4 無法可靠知道訪客是否在 iframe 內送出。`view_trial_section` 及 `click_external_form` 只代表看見申請區與點擊另開表單，不等於完成申請；實際提交數請以 Google 表單的回覆數為準。分析工具不傳送表單填答內容。數據從新版部署後開始累積，不會回填歷史瀏覽。
+
 ## 部署與成本
 
 正式網站使用 Cloudflare Pages 免費方案的 `blackdog-japanese-lessons.pages.dev` 網址，GitHub 的 `blackdog-trial-draft` 分支保留原始碼。網頁是靜態檔案，可直接上傳 Pages；更改原始碼後須重新部署。Cloudflare Pages 免費方案目前每月 500 次建置、每站 20,000 個檔案、每個檔案最多 25 MiB；靜態請求免費且不限量。Google 表單回覆保存在黑犬帳號的 Google 雲端硬碟中，免費帳號共用 15 GB 空間額度。額度可能變動。
