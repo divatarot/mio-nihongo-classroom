@@ -278,6 +278,7 @@ async function start() {
     state.db = firestore.getFirestore(instance);
     auth.onAuthStateChanged(state.auth, async (user) => {
       state.user = user;
+      document.body.classList.toggle('has-account', Boolean(user));
       $('#sign-out').hidden = !user;
       if (!user) { showOnly('signed-out'); setMessage(''); return; }
       setMessage('正在確認你的學員權限…');
