@@ -276,6 +276,7 @@ async function start() {
     const instance = app.initializeApp(firebaseConfig);
     state.auth = auth.getAuth(instance);
     state.db = firestore.getFirestore(instance);
+    await auth.setPersistence(state.auth, auth.browserSessionPersistence);
     auth.onAuthStateChanged(state.auth, async (user) => {
       state.user = user;
       document.body.classList.toggle('has-account', Boolean(user));
