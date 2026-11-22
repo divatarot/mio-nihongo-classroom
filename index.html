@@ -135,6 +135,10 @@
       color: var(--ink);
     }
 
+    .nav-actions { display: flex; align-items: center; gap: 14px; }
+    .student-entry { color: var(--green); font-size: .9rem; font-weight: 800; white-space: nowrap; }
+    .student-entry:hover { text-decoration: underline; text-underline-offset: 4px; }
+
     .button {
       display: inline-flex;
       align-items: center;
@@ -855,7 +859,7 @@
     .trial-form-link { background:var(--green); }
     footer { background:#342b27; }
     @media(max-width:980px) { .hero-grid,.letter-grid,.podcast-bridge .section-inner { grid-template-columns:1fr; gap:24px; } .steps { grid-template-columns:repeat(2,minmax(0,1fr)); } .step:nth-child(2) { border-right:0; } }
-    @media(max-width:640px) { .nav .button { min-height:40px; padding:8px 11px; font-size:.82rem; white-space:nowrap; } .brand { font-size:.9rem; } .hero { padding:34px 0 48px; } .hero .eyebrow { font-size:1.02rem; } .hero-grid { gap:26px; } .portrait-caption { text-align:left; } .podcast-bridge { padding:34px 0; } .podcast-bridge .podcast-note { padding:17px 19px; } .letter-paper { padding:27px 24px; } .cards,.pricing,.steps { grid-template-columns:1fr; } .card { min-height:0; } .step { border-right:0; border-bottom:1px solid var(--line); } .step:last-child { border-bottom:0; } .google-form-frame { height:4250px; } }
+    @media(max-width:640px) { .nav .button { min-height:40px; padding:8px 11px; font-size:.82rem; white-space:nowrap; } .brand { font-size:.9rem; } .brand span:last-child { display:none; } .nav-actions { gap:10px; } .student-entry { font-size:.82rem; } .hero { padding:34px 0 48px; } .hero .eyebrow { font-size:1.02rem; } .hero-grid { gap:26px; } .portrait-caption { text-align:left; } .podcast-bridge { padding:34px 0; } .podcast-bridge .podcast-note { padding:17px 19px; } .letter-paper { padding:27px 24px; } .cards,.pricing,.steps { grid-template-columns:1fr; } .card { min-height:0; } .step { border-right:0; border-bottom:1px solid var(--line); } .step:last-child { border-bottom:0; } .google-form-frame { height:4250px; } }
   </style>
 </head>
 <body>
@@ -870,7 +874,7 @@
         <a href="#courses" data-ga-event="click_nav_courses">可以學什麼</a>
         <a href="#pricing" data-ga-event="click_nav_pricing">課程費用</a>
       </div>
-      <a class="button" href="#apply" data-ga-event="click_nav_trial">申請免費試上</a>
+      <div class="nav-actions"><a class="student-entry" href="./student.html" data-ga-event="click_student_login">學員登入</a><a class="button" href="#apply" data-ga-event="click_nav_trial">申請免費試上</a></div>
     </nav>
   </header>
 
