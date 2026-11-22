@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./student.css">
+  <title>學員專區｜黑犬星球日文教室</title>
+  <meta name="description" content="黑犬老師學員專屬課程資訊。使用 Google 登入，經老師核准後查看自己的課程進度、作業與教材。">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="學員專區導覽">
+      <a class="brand" href="./index.html"><span class="brand-mark" aria-hidden="true">犬</span><span>黑犬星球｜日文教室</span></a>
+      <div class="nav-actions"><a href="./index.html">回課程介紹</a><button id="sign-out" type="button" hidden>登出</button></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro wrap" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow">おかえりなさい 🐾</p>
+        <h1 id="page-title">你的日文，<br>我們一起慢慢累積。</h1>
+        <p class="lead">這裡放著我們上課的進度、下次見面的時間，還有黑犬老師留給你的練習與教材。只有你和老師能看到你的課程內容。</p>
+        <p class="intro-note">試上申請仍可<a href="./index.html#apply">免登入填寫</a>；學員專區需要 Google 帳號登入，並由老師核准。</p>
+      </div>
+      <img class="teacher-image" src="./blackdog-teacher.jpg" alt="黑犬老師在溫暖的書桌前陪你學日文" width="900" height="675">
+    </section>
+
+    <div class="wrap portal-wrap">
+      <p id="portal-message" class="message" role="status" aria-live="polite">正在載入登入服務…</p>
+      <section id="signed-out" class="paper login-panel" hidden aria-labelledby="login-title">
+        <div><p class="eyebrow">學員入口</p><h2 id="login-title">先用 Google 帳號登入。</h2><p>第一次進來時，請送出開通申請。黑犬老師確認後，你就會看到自己的課程頁。</p></div>
+        <button id="google-sign-in" class="primary-button" type="button">使用 Google 登入</button>
+      </section>
+
+      <section id="pending-view" class="paper pending-panel" hidden aria-labelledby="pending-title">
+        <p class="eyebrow">學員資料確認</p>
+        <h2 id="pending-title">再等我幫你把課堂準備好。</h2>
+        <p id="account-email" class="account-email"></p>
+        <p id="pending-copy">登入成功後，請按下方按鈕，讓黑犬老師知道你想開通學員專區。</p>
+        <button id="request-access" class="primary-button" type="button">送出開通申請</button>
+        <p class="fine-print">送出時只會傳送你的 Google 帳號名稱與電子郵件給黑犬老師，以便確認身分。不會自動公開課程資料。</p>
+      </section>
+
+      <section id="student-view" hidden aria-labelledby="student-title">
+        <div class="section-head"><div><p class="eyebrow">わたしの教室</p><h2 id="student-title">嗨，<span id="student-name"></span>。</h2><p>今天也照自己的步調，學一點就很好。</p></div><span class="private-badge">僅你與老師可見</span></div>
+        <div class="student-grid">
+          <article class="paper next-card"><p class="card-kicker">下次見面</p><h3>下次上課時間</h3><p id="next-lesson" class="featured-value"></p><p>時間以台灣時間為準；如需更改，請直接聯繫黑犬老師。</p></article>
+          <article class="paper"><p class="card-kicker">いまここ</p><h3>目前進度</h3><p id="progress" class="preserve-lines"></p></article>
+          <article class="paper"><p class="card-kicker">先生から</p><h3>老師留言</h3><p id="teacher-note" class="preserve-lines"></p></article>
+          <article class="paper"><p class="card-kicker">少しずつ</p><h3>這週練習</h3><p id="homework" class="preserve-lines"></p></article>
+          <article class="paper materials-card"><p class="card-kicker">持ちもの</p><h3>教材與連結</h3><ul id="materials"></ul></article>
+        </div>
+      </section>
+
+      <section id="teacher-view" hidden aria-labelledby="teacher-title">
+        <div class="section-head"><div><p class="eyebrow">黑犬老師的工作桌</p><h2 id="teacher-title">學員開通與課程筆記</h2><p>核准 Google 帳號後，再替每位學員填入自己的課程內容。</p></div><span class="private-badge">老師帳號</span></div>
+        <div class="teacher-layout"><section class="paper" aria-labelledby="requests-title"><h3 id="requests-title">等待開通的帳號</h3><div id="request-list"></div></section><section class="paper" aria-labelledby="roster-title"><h3 id="roster-title">已建立的學員</h3><div id="student-list"></div></section></div>
+      </section>
+    </div>
+  </main>
+
+  <footer><div class="wrap"><span>黑犬星球｜一點一點，把喜歡的日文學成自己的日文。</span><span>本頁不載入網站分析工具；課程資料由黑犬帳號的 Firebase 專案保管。</span></div></footer>
+  <script type="module" src="./student.js"></script>
+</body>
+</html>
