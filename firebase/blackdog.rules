@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function googleUser() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.firebase.sign_in_provider == 'google.com';
+    }
+
+    function teacher() {
+      return googleUser() && request.auth.token.email == 'blackdogstarball@gmail.com';
+    }
+
+    function self(uid) {
+      return googleUser() && request.auth.uid == uid;
+    }
+
+    function requestPath(uid) {
+      return /databases/$(database)/documents/accessRequests/$(uid);
+    }
+
+    function validStudent(uid) {
+      return request.resource.data.keys().hasAll([
+          'uid', 'email', 'name', 'active', 'nextLesson', 'progress',
+          'teacherNote', 'homework', 'materials', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'uid', 'email', 'name', 'active', 'nextLesson', 'progress',
+          'teacherNote', 'homework', 'materials', 'updatedAt'
+        ])
+        && request.resource.data.uid == uid
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.active is bool
+        && request.resource.data.nextLesson is string
+        && request.resource.data.nextLesson.size() <= 160
+        && request.resource.data.progress is string
+        && request.resource.data.progress.size() <= 4000
+        && request.resource.data.teacherNote is string
+        && request.resource.data.teacherNote.size() <= 4000
+        && request.resource.data.homework is string
+        && request.resource.data.homework.size() <= 4000
+        && request.resource.data.materials is string
+        && request.resource.data.materials.size() <= 4000
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /accessRequests/{uid} {
+      allow get: if self(uid) || teacher();
+      allow list: if teacher();
+      allow create: if self(uid)
+        && request.resource.data.keys().hasAll(['uid', 'email', 'displayName', 'status', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'displayName', 'status', 'createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 80
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      allow update: if teacher()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt'])
+        && request.resource.data.status in ['pending', 'approved', 'denied']
+        && request.resource.data.reviewedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /students/{uid} {
+      allow get: if teacher() || (self(uid) && resource.data.active == true);
+      allow list: if teacher();
+      allow create: if teacher()
+        && exists(requestPath(uid))
+        && validStudent(uid)
+        && request.resource.data.email == get(requestPath(uid)).data.email;
+      allow update: if teacher()
+        && validStudent(uid)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.email == resource.data.email;
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
