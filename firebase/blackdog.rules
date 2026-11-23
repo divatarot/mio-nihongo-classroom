@@ -119,6 +119,20 @@ service cloud.firestore {
       }
     }
 
+    match /unlinkedStudentRecords/{recordId} {
+      allow get, list: if teacher();
+      allow update: if teacher()
+        && resource.data.status == 'awaiting_google_identity'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'linkedUid'])
+        && request.resource.data.status == 'linked'
+        && request.resource.data.linkedUid is string
+        && request.resource.data.linkedUid.size() > 0
+        && request.resource.data.linkedUid.size() <= 128
+        && exists(studentPath(request.resource.data.linkedUid))
+        && get(studentPath(request.resource.data.linkedUid)).data.active == true;
+      allow create, delete: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
