@@ -57,10 +57,35 @@
         <section class="lesson-section" aria-labelledby="lessons-title"><div class="section-head"><div><p class="eyebrow">これまでの一歩</p><h3 id="lessons-title">每堂課的小筆記</h3><p>上過的內容和老師提醒，都可以在這裡慢慢回顧。</p></div></div><div id="lesson-list" class="lesson-list"></div></section>
       </section>
 
-      <section id="teacher-view" hidden aria-labelledby="teacher-title">
-        <div class="section-head"><div><p class="eyebrow">黑犬老師的工作桌</p><h2 id="teacher-title">學員開通與課程筆記</h2><p>核准 Google 帳號後，為學員整理課程摘要；每堂新課請另外保存，之前的紀錄會保留。</p></div><span class="private-badge">老師帳號</span></div>
-        <div class="teacher-layout"><section class="paper" aria-labelledby="requests-title"><h3 id="requests-title">等待開通的帳號</h3><div id="request-list"></div></section><section class="paper" aria-labelledby="roster-title"><h3 id="roster-title">已建立的學員</h3><div id="student-list"></div></section></div>
-        <section class="paper draft-section" aria-labelledby="drafts-title"><h3 id="drafts-title">等待本人確認的課堂資料</h3><p class="fine-print">學員先用自己的 Google 帳號送出開通申請。確認是本人後，先核准帳號，再將這裡的舊課綁定到她的帳號；同名不會自動對應。</p><div id="draft-list"></div></section>
+      <section id="teacher-view" class="work-shell" hidden aria-labelledby="teacher-title">
+        <aside class="work-sidebar" aria-label="教學工作區選單">
+          <div class="work-brand"><span class="brand-mark" aria-hidden="true">犬</span><div><strong>學日文大小事</strong><small>日文家教管理站</small></div></div>
+          <p class="work-nav-label">教學工作區</p>
+          <nav class="work-nav" aria-label="老師後台分頁">
+            <button type="button" data-work-view="classwork" aria-current="page">今日課堂</button>
+            <button type="button" data-work-view="overview">工作總覽</button>
+            <button type="button" data-work-view="students">學生管理</button>
+            <button type="button" data-work-view="schedule">課堂時間參考</button>
+            <button type="button" data-work-view="materials">個人化教材</button>
+            <button type="button" data-work-view="plans">課程與方案</button>
+          </nav>
+          <div class="work-side-bottom"><a href="./index.html#apply">打開試上申請</a><span>黑犬老師 · Google 帳號</span></div>
+        </aside>
+        <div class="work-main">
+          <header class="work-top"><span>教學工作區 › <strong id="work-breadcrumb">今日課堂</strong></span><span class="private-badge">只有老師可管理</span></header>
+          <div class="work-body">
+            <section id="work-classwork" class="work-pane" aria-labelledby="teacher-title">
+              <div class="work-hero"><p>きょうの授業 🐾</p><h1 id="teacher-title">今日課堂</h1><span id="today-date"></span></div>
+              <div class="paper work-action"><div><h2>開始寫課堂紀錄</h2><p>先選學員，再記下今天上了什麼、老師評語與下一堂要練習的內容。</p></div><div class="work-action-controls"><select id="classwork-student" aria-label="選擇學員"></select><button id="classwork-open" class="primary-button" type="button">寫課堂紀錄</button></div></div>
+              <div class="work-two"><section class="paper"><h2>今天的課</h2><div id="today-lesson-list"></div></section><section class="paper"><h2>等待本人確認</h2><div id="classwork-draft-list"></div></section></div>
+            </section>
+            <section id="work-overview" class="work-pane" hidden aria-labelledby="overview-title"><div class="work-page-head"><h1 id="overview-title">今天的日文課，從這裡開始。</h1><p>申請、排課與學習紀錄集中查看。</p></div><div class="work-stats"><button type="button" data-open-work="students"><span>待核准</span><strong id="count-requests">0</strong></button><button type="button" data-open-work="students"><span>進行中學員</span><strong id="count-students">0</strong></button><button type="button" data-open-work="students"><span>待綁定舊課</span><strong id="count-drafts">0</strong></button></div><div class="work-two"><section class="paper"><h2>學生工作清單</h2><div id="overview-students"></div></section><section class="paper"><h2>近期排課</h2><div id="overview-schedule"></div></section></div><section class="paper work-inbox"><h2>待回覆的學生訊息與請假</h2><div id="overview-messages"></div></section></section>
+            <section id="work-students" class="work-pane" hidden aria-labelledby="students-title"><div class="work-page-head"><h1 id="students-title">學生管理</h1><p>搜尋學生、核准 Google 帳號，並編輯個別課程紀錄。</p></div><div class="teacher-layout"><section class="paper" aria-labelledby="requests-title"><h2 id="requests-title">等待開通的帳號</h2><div id="request-list"></div></section><section class="paper" aria-labelledby="roster-title"><h2 id="roster-title">已建立的學員</h2><label class="work-search">搜尋學生<input id="student-search" type="search" placeholder="姓名或 Google 電子郵件"></label><div id="student-list"></div></section></div><section class="paper draft-section" aria-labelledby="drafts-title"><h2 id="drafts-title">等待本人確認的課堂資料</h2><p>學員送出開通申請後，請核對 Google 電子郵件、核准，再綁定舊課。同名不會自動對應。</p><div id="draft-list"></div></section></section>
+            <section id="work-schedule" class="work-pane" hidden aria-labelledby="schedule-title"><div class="work-page-head"><h1 id="schedule-title">課堂時間參考</h1><p>以老師填寫的下次上課時間為準；調課時可在學生管理更新。</p></div><section class="paper"><div id="schedule-list"></div></section></section>
+            <section id="work-materials" class="work-pane" hidden aria-labelledby="material-title"><div class="work-page-head"><h1 id="material-title">個人化教材</h1><p>按學員與課堂回顧已附的 Drive 講義與教材連結。</p></div><section class="paper"><div id="material-library"></div></section></section>
+            <section id="work-plans" class="work-pane" hidden aria-labelledby="plans-title"><div class="work-page-head"><h1 id="plans-title">課程與方案</h1><p>在這裡修改六種課程的公開說明與參考價格，儲存後課程頁會同步顯示。</p></div><section class="paper"><form id="plans-form"><div id="plans-editor"></div><button class="primary-button" type="submit">儲存公開課程方案</button></form><p class="fine-print">試上表單仍在 Google 表單管理；公開頁面的課程與費用可在此維護。</p><a href="./index.html#pricing" target="_blank" rel="noopener noreferrer">查看公開課程頁 ↗</a></section></section>
+          </div>
+        </div>
       </section>
     </div>
   </main>
