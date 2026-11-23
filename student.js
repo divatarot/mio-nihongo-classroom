@@ -3,6 +3,7 @@ import { firebaseConfig } from './student-config.js';
 const $ = (selector) => document.querySelector(selector);
 const state = { auth: null, db: null, sdk: null, user: null };
 const teacherEmail = 'blackdogstarball@gmail.com';
+const portalMode = document.body.dataset.portal;
 
 function setMessage(text = '', error = false) {
   const message = $('#portal-message');
@@ -35,6 +36,59 @@ function safeMaterials(raw) {
     } catch { /* Ignore malformed links instead of showing an unsafe target. */ }
   }
   return items;
+}
+
+function materialList(raw) {
+  const list = document.createElement('ul');
+  for (const item of safeMaterials(raw)) {
+    const li = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = item.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = item.label;
+    li.append(link);
+    list.append(li);
+  }
+  return list;
+}
+
+function lessonCard(data) {
+  const card = document.createElement('article');
+  card.className = 'paper lesson-card';
+  const date = document.createElement('p');
+  date.className = 'card-kicker';
+  date.textContent = data.date || '課堂紀錄';
+  card.append(date);
+  for (const [label, value] of [
+    ['這堂課', data.content],
+    ['老師的觀察', data.feedback],
+    ['下次一起練習', data.nextTopic]
+  ]) {
+    if (!value) continue;
+    const heading = document.createElement('h4');
+    heading.textContent = label;
+    const body = document.createElement('p');
+    body.className = 'preserve-lines';
+    body.textContent = value;
+    card.append(heading, body);
+  }
+  const links = materialList(data.materials);
+  if (links.childElementCount) {
+    const heading = document.createElement('h4');
+    heading.textContent = '這堂課的教材';
+    card.append(heading, links);
+  }
+  return card;
+}
+
+async function renderLessons(uid, target) {
+  const { collection, getDocs } = state.sdk.firestore;
+  const records = await getDocs(collection(state.db, 'students', uid, 'lessons'));
+  const sorted = records.docs.map((item) => item.data())
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  target.replaceChildren(...sorted.map(lessonCard));
+  if (!sorted.length) target.textContent = '老師還沒有加入課堂紀錄。';
 }
 
 function renderStudent(data) {
@@ -88,6 +142,8 @@ async function loadStudent() {
     const student = await getDoc(doc(state.db, 'students', state.user.uid));
     if (student.exists() && student.data().active === true) {
       renderStudent(student.data());
+      try { await renderLessons(state.user.uid, $('#lesson-list')); }
+      catch { $('#lesson-list').textContent = '課堂紀錄暫時無法載入，請稍後再試。'; }
       return;
     }
   } catch (error) {
@@ -169,7 +225,64 @@ function teacherStudentCard(id, data) {
     } catch { setMessage('儲存失敗，請稍後再試。', true); }
     finally { save.disabled = false; }
   });
-  card.append(title, email, form);
+  const lessonHeading = document.createElement('h4');
+  lessonHeading.textContent = '新增一堂課';
+  const lessonForm = document.createElement('form');
+  lessonForm.className = 'lesson-editor';
+  lessonForm.append(
+    makeField('上課日期', 'date', new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' }), { max: 10 }),
+    makeField('這堂課做了什麼', 'content', '', { full: true, multiline: true }),
+    makeField('老師的觀察與鼓勵', 'feedback', '', { full: true, multiline: true }),
+    makeField('下次一起練習', 'nextTopic', '', { full: true, multiline: true }),
+    makeField('這堂課的教材', 'materials', '', { full: true, multiline: true, help: '每行一筆：教材名稱 | https://連結。' })
+  );
+  const addLesson = document.createElement('button');
+  addLesson.type = 'submit';
+  addLesson.className = 'primary-button';
+  addLesson.textContent = '保存這堂課';
+  lessonForm.append(addLesson);
+  lessonForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const values = new FormData(lessonForm);
+    const date = String(values.get('date') || '').trim();
+    const content = String(values.get('content') || '').trim();
+    const materials = String(values.get('materials') || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(`${date}T00:00:00Z`))) {
+      setMessage('請填寫有效的上課日期（YYYY-MM-DD）。', true);
+      return;
+    }
+    if (!content) {
+      setMessage('請先填寫這堂課做了什麼。', true);
+      return;
+    }
+    if (materials && safeMaterials(materials).length !== materials.split(/\r?\n/).filter(Boolean).length) {
+      setMessage('教材連結需使用 https://，每行一筆。', true);
+      return;
+    }
+    addLesson.disabled = true;
+    try {
+      const { addDoc, collection, serverTimestamp } = state.sdk.firestore;
+      await addDoc(collection(state.db, 'students', id, 'lessons'), {
+        date,
+        content,
+        feedback: String(values.get('feedback') || '').trim(),
+        nextTopic: String(values.get('nextTopic') || '').trim(),
+        materials,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      setMessage('這堂課已保存，學員登入後可以看到。');
+      await loadTeacher();
+    } catch { setMessage('課堂紀錄保存失敗，請稍後再試。', true); }
+    finally { addLesson.disabled = false; }
+  });
+  const lessonHistory = document.createElement('div');
+  lessonHistory.className = 'lesson-list teacher-lessons';
+  lessonHistory.textContent = '正在載入課堂紀錄…';
+  void renderLessons(id, lessonHistory).catch(() => {
+    lessonHistory.textContent = '課堂紀錄暫時無法載入。';
+  });
+  card.append(title, email, form, lessonHeading, lessonForm, lessonHistory);
   return card;
 }
 
@@ -283,8 +396,13 @@ async function start() {
       $('#sign-out').hidden = !user;
       if (!user) { showOnly('signed-out'); setMessage(''); return; }
       setMessage('正在確認你的學員權限…');
-      if (isTeacher(user)) await loadTeacher();
-      else await loadStudent();
+      if (isTeacher(user)) {
+        if (portalMode === 'student') { window.location.replace('./teacher.html'); return; }
+        await loadTeacher();
+      } else {
+        if (portalMode === 'teacher') { window.location.replace('./student.html'); return; }
+        await loadStudent();
+      }
     }, () => setMessage('登入狀態無法確認，請重新整理網頁。', true));
   } catch { showOnly('signed-out'); $('#google-sign-in').disabled = true; setMessage('登入服務暫時無法載入，請稍後重新整理。', true); }
 }
