@@ -220,8 +220,8 @@ function teacherStudentCard(id, data) {
         active: active.checked,
         updatedAt: state.sdk.firestore.serverTimestamp()
       });
-      setMessage('已儲存這位學員的課程資料。');
       await loadTeacher();
+      setMessage('已儲存這位學員的課程資料。');
     } catch { setMessage('儲存失敗，請稍後再試。', true); }
     finally { save.disabled = false; }
   });
@@ -271,8 +271,8 @@ function teacherStudentCard(id, data) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
-      setMessage('這堂課已保存，學員登入後可以看到。');
       await loadTeacher();
+      setMessage('這堂課已保存，學員登入後可以看到。');
     } catch { setMessage('課堂紀錄保存失敗，請稍後再試。', true); }
     finally { addLesson.disabled = false; }
   });
@@ -283,6 +283,103 @@ function teacherStudentCard(id, data) {
     lessonHistory.textContent = '課堂紀錄暫時無法載入。';
   });
   card.append(title, email, form, lessonHeading, lessonForm, lessonHistory);
+  return card;
+}
+
+function draftLessons(data) {
+  return Object.entries(data).filter(([key]) => /^lesson_\d{4}_\d{2}_\d{2}$/.test(key))
+    .map(([, raw]) => {
+      try { return JSON.parse(raw); }
+      catch { return null; }
+    })
+    .filter((lesson) => lesson && /^\d{4}-\d{2}-\d{2}$/.test(lesson.date)
+      && typeof lesson.content === 'string' && lesson.content.trim())
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function teacherDraftCard(id, data, studentDocs) {
+  const card = document.createElement('article');
+  card.className = 'student-editor';
+  const title = document.createElement('strong');
+  title.textContent = data.name || '未命名學員';
+  const status = document.createElement('small');
+  status.textContent = data.status === 'linked'
+    ? '已綁定到經核准的 Google 帳號'
+    : '尚待本人 Google 帳號開通與核對';
+  const history = document.createElement('div');
+  history.className = 'lesson-list teacher-lessons';
+  const lessons = draftLessons(data);
+  history.replaceChildren(...lessons.map(lessonCard));
+  card.append(title, status, history);
+  if (data.status === 'linked') return card;
+  const approved = studentDocs.filter((item) => item.data().active === true);
+  const label = document.createElement('label');
+  label.className = 'field draft-picker';
+  const caption = document.createElement('span');
+  caption.textContent = '核對後，選擇正確的學員帳號';
+  const select = document.createElement('select');
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = approved.length ? '請選擇已核准的帳號' : '目前沒有已核准的學員';
+  select.append(placeholder);
+  for (const student of approved) {
+    const option = document.createElement('option');
+    option.value = student.id;
+    option.textContent = `${student.data().name || '未填稱呼'}｜${student.data().email}`;
+    select.append(option);
+  }
+  label.append(caption, select);
+  const link = document.createElement('button');
+  link.type = 'button';
+  link.className = 'primary-button';
+  link.textContent = '確認身分並綁定課堂資料';
+  const verifiedLabel = document.createElement('label');
+  verifiedLabel.className = 'verify-label';
+  const verified = document.createElement('input');
+  verified.type = 'checkbox';
+  verifiedLabel.append(verified, document.createTextNode('我已向學員核對這個 Google 電子郵件是本人使用'));
+  const refreshLink = () => { link.disabled = !select.value || !verified.checked || !lessons.length; };
+  select.addEventListener('change', refreshLink);
+  verified.addEventListener('change', refreshLink);
+  refreshLink();
+  link.addEventListener('click', async () => {
+    const uid = select.value;
+    if (!uid) { setMessage('請先選擇本人已核准的 Google 帳號。', true); return; }
+    link.disabled = true;
+    const { doc, getDoc, setDoc, updateDoc, serverTimestamp } = state.sdk.firestore;
+    try {
+      for (const lesson of lessons) {
+        const ref = doc(state.db, 'students', uid, 'lessons', lesson.date);
+        if ((await getDoc(ref)).exists()) continue;
+        await setDoc(ref, {
+          date: lesson.date,
+          content: lesson.content,
+          feedback: String(lesson.feedback || ''),
+          nextTopic: String(lesson.nextTopic || ''),
+          materials: String(lesson.materials || ''),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+      const latest = lessons.at(-1);
+      await updateDoc(doc(state.db, 'students', uid), {
+        name: String(data.name || ''),
+        progress: latest.content,
+        teacherNote: String(latest.feedback || ''),
+        materials: String(latest.materials || ''),
+        updatedAt: serverTimestamp()
+      });
+      await updateDoc(doc(state.db, 'unlinkedStudentRecords', id), {
+        status: 'linked', linkedUid: uid
+      });
+      await loadTeacher();
+      setMessage('兩堂課已綁定；這位學員登入後會看到自己的紀錄。');
+    } catch {
+      setMessage('綁定未完成。請確認帳號後再試；已成功保存的課堂不會重複新增。', true);
+      link.disabled = false;
+    }
+  });
+  card.append(label, verifiedLabel, link);
   return card;
 }
 
@@ -314,7 +411,7 @@ function teacherRequestCard(id, data, hasStudentRecord) {
       });
     }
     batch.update(doc(state.db, 'accessRequests', id), { status: 'approved', reviewedAt: serverTimestamp() });
-    try { await batch.commit(); setMessage('已開通，請在學員清單加入課程內容。'); await loadTeacher(); }
+    try { await batch.commit(); await loadTeacher(); setMessage('已開通；若有待綁定舊課，請核對後選擇這個帳號。'); }
     catch { setMessage('開通失敗，請稍後再試。', true); approve.disabled = false; }
   });
   card.append(name, email, status, approve);
@@ -324,9 +421,10 @@ function teacherRequestCard(id, data, hasStudentRecord) {
 async function loadTeacher() {
   const { collection, getDocs } = state.sdk.firestore;
   try {
-    const [requests, students] = await Promise.all([
+    const [requests, students, drafts] = await Promise.all([
       getDocs(collection(state.db, 'accessRequests')),
-      getDocs(collection(state.db, 'students'))
+      getDocs(collection(state.db, 'students')),
+      getDocs(collection(state.db, 'unlinkedStudentRecords'))
     ]);
     const requestList = $('#request-list');
     const pending = requests.docs.filter((item) => item.data().status !== 'approved');
@@ -337,6 +435,11 @@ async function loadTeacher() {
     const studentList = $('#student-list');
     studentList.replaceChildren(...students.docs.map((item) => teacherStudentCard(item.id, item.data())));
     if (students.empty) studentList.textContent = '核准第一位學員後，課程編輯欄會出現在這裡。';
+    const draftList = $('#draft-list');
+    draftList.replaceChildren(...drafts.docs.map((item) =>
+      teacherDraftCard(item.id, item.data(), students.docs)
+    ));
+    if (drafts.empty) draftList.textContent = '目前沒有等待綁定的舊課。';
     showOnly('teacher-view');
     if (!$('#portal-message').classList.contains('error')) setMessage('');
   } catch { showOnly('teacher-view'); setMessage('無法載入老師資料，請檢查帳號與資料庫權限。', true); }
