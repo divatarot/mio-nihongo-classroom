@@ -3,3 +3,4 @@
 [hidden]{display:none!important}
 .has-account .intro{grid-template-columns:1fr;padding:32px 0 22px}
 .has-account .teacher-image{display:none}
+.lesson-section{margin-top:28px}.lesson-section .section-head{margin-bottom:15px}.lesson-list{display:grid;gap:16px}.lesson-card{padding:23px 27px}.lesson-card h4{margin:16px 0 5px;color:var(--ink)}.lesson-card p{margin:0;overflow-wrap:anywhere}.lesson-card ul{margin:7px 0 0;padding-left:22px}.lesson-card a{color:var(--green);text-decoration:underline}.student-editor>h4{margin:28px 0 0}.student-editor .lesson-editor{border-top:1px dashed var(--line);padding-top:17px}.lesson-editor>.primary-button{justify-self:start}.teacher-lessons{margin-top:18px}.teacher-lessons .lesson-card{box-shadow:none;background:#fffaf4}.teacher-lessons .lesson-card h4{font-size:1rem}
