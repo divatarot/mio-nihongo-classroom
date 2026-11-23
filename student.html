@@ -10,7 +10,7 @@
   <title>學員專區｜黑犬星球日文教室</title>
   <meta name="description" content="黑犬老師學員專屬課程資訊。使用 Google 登入，經老師核准後查看自己的課程進度、作業與教材。">
 </head>
-<body>
+<body data-portal="student">
   <header class="topbar">
     <nav class="nav" aria-label="學員專區導覽">
       <a class="brand" href="./index.html"><span class="brand-mark" aria-hidden="true">犬</span><span>黑犬星球｜日文教室</span></a>
@@ -54,6 +54,7 @@
           <article class="paper"><p class="card-kicker">少しずつ</p><h3>這週練習</h3><p id="homework" class="preserve-lines"></p></article>
           <article class="paper materials-card"><p class="card-kicker">持ちもの</p><h3>教材與連結</h3><ul id="materials"></ul></article>
         </div>
+        <section class="lesson-section" aria-labelledby="lessons-title"><div class="section-head"><div><p class="eyebrow">これまでの一歩</p><h3 id="lessons-title">每堂課的小筆記</h3><p>上過的內容和老師提醒，都可以在這裡慢慢回顧。</p></div></div><div id="lesson-list" class="lesson-list"></div></section>
       </section>
 
       <section id="teacher-view" hidden aria-labelledby="teacher-title">
