@@ -24,7 +24,7 @@
         <p class="eyebrow">おかえりなさい 🐾</p>
         <h1 id="page-title">你的日文，<br>我們一起慢慢累積。</h1>
         <p class="lead">這裡放著我們上課的進度、下次見面的時間，還有黑犬老師留給你的練習與教材。只有你和老師能看到你的課程內容。</p>
-        <p class="intro-note">試上申請仍可<a href="./index.html#apply">免登入填寫</a>；學員專區需要 Google 帳號登入，並由老師核准。</p>
+        <p class="intro-note">試上申請仍可<a href="./index.html#apply">免登入填寫</a>；已有課堂但暫時沒有 Google 帳號，也可以使用老師給的臨時邀請連結。</p>
       </div>
       <img class="teacher-image" src="./blackdog-teacher.jpg" alt="黑犬老師在溫暖的書桌前陪你學日文" width="900" height="675">
     </section>
@@ -33,7 +33,21 @@
       <p id="portal-message" class="message" role="status" aria-live="polite">正在載入登入服務…</p>
       <section id="signed-out" class="paper login-panel" hidden aria-labelledby="login-title">
         <div><p class="eyebrow">學員入口</p><h2 id="login-title">先用 Google 帳號登入。</h2><p>第一次進來時，請送出開通申請。黑犬老師確認後，你就會看到自己的課程頁。</p></div>
-        <button id="google-sign-in" class="primary-button" type="button">使用 Google 登入</button>
+        <div class="login-actions"><button id="google-sign-in" class="primary-button" type="button">使用 Google 登入</button><button id="show-temp-entry" class="secondary-button" type="button">使用老師給的臨時邀請</button></div>
+      </section>
+
+      <section id="temporary-entry-view" class="paper pending-panel" hidden aria-labelledby="temp-entry-title">
+        <p class="eyebrow">一段專屬的小路 🐾</p><h2 id="temp-entry-title">先看看我們上過的日文課。</h2>
+        <p>老師給你的邀請連結會帶入邀請碼。這個連結只能由一位學員領取，請不要轉傳。</p>
+        <form id="temp-invite-form" class="temp-invite-form"><label class="field">邀請碼<input id="temp-invite-code" name="code" type="text" autocomplete="off" spellcheck="false" maxlength="64" required placeholder="貼上老師給你的邀請碼"></label><button class="primary-button" type="submit">開啟我的臨時教室</button></form>
+        <button id="temp-back" class="text-button" type="button">改用 Google 登入</button>
+      </section>
+
+      <section id="temporary-view" hidden aria-labelledby="temp-title">
+        <div class="section-head"><div><p class="eyebrow">わたしの教室</p><h2 id="temp-title">嗨，<span id="temp-name">同學</span>。</h2><p>你的課堂小筆記先放在這裡，之後可以連結自己的 Google 帳號。</p></div><span class="private-badge">臨時專屬頁</span></div>
+        <div class="student-grid"><article class="paper next-card"><p class="card-kicker">下次見面</p><h3>下次上課時間</h3><p id="temp-next-lesson" class="featured-value"></p></article><article class="paper"><p class="card-kicker">いまここ</p><h3>目前進度</h3><p id="temp-progress" class="preserve-lines"></p></article><article class="paper"><p class="card-kicker">先生から</p><h3>老師的提醒</h3><p id="temp-note" class="preserve-lines"></p></article><article class="paper"><p class="card-kicker">少しずつ</p><h3>這週練習</h3><p id="temp-homework" class="preserve-lines"></p></article><article class="paper materials-card"><p class="card-kicker">持ちもの</p><h3>教材與連結</h3><div id="temp-materials"></div></article></div>
+        <section class="lesson-section"><div class="section-head"><div><p class="eyebrow">これまでの一歩</p><h3>每堂課的小筆記</h3></div></div><div id="temp-lessons" class="lesson-list"></div></section>
+        <section class="paper temp-link-box"><h3>把這間教室帶到自己的 Google 帳號</h3><p id="temp-link-status">有 Google 帳號時，請在同一台裝置按下方按鈕連結；課堂紀錄會跟著你的帳號。</p><button id="temp-link-google" class="primary-button" type="button">連結我的 Google 帳號</button><button id="temp-request-access" class="secondary-button" type="button" hidden>通知老師開通正式專區</button><p id="temp-request-status" class="helper"></p></section>
       </section>
 
       <section id="pending-view" class="paper pending-panel" hidden aria-labelledby="pending-title">
