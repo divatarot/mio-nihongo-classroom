@@ -1,7 +1,7 @@
 import { firebaseConfig } from './student-config.js';
 
 const $ = (selector) => document.querySelector(selector);
-const state = { auth: null, db: null, sdk: null, user: null, agreementVersion: '' };
+const state = { auth: null, db: null, sdk: null, user: null, agreementVersion: '', claimingInvite: false };
 const teacherEmail = 'blackdogstarball@gmail.com';
 const portalMode = document.body.dataset.portal;
 const defaultPlans = [
@@ -20,8 +20,10 @@ function setMessage(text = '', error = false) {
 }
 
 function showOnly(id) {
-  for (const view of ['signed-out', 'pending-view', 'student-view', 'teacher-view']) {
-    $(`#${view}`).hidden = view !== id;
+  for (const view of ['signed-out', 'temporary-entry-view', 'temporary-view',
+    'pending-view', 'student-view', 'teacher-view']) {
+    const panel = $(`#${view}`);
+    if (panel) panel.hidden = view !== id;
   }
 }
 
@@ -176,8 +178,56 @@ async function loadStudent() {
       return;
     }
   }
-  try { await showPending(); }
+  try {
+    if (await loadTemporaryPortal()) return;
+    if (state.user.isAnonymous) { showOnly('temporary-entry-view'); return; }
+    await showPending();
+  }
   catch { setMessage('目前無法確認開通狀態，請稍後再試。', true); }
+}
+
+function inviteFromUrl() {
+  const code = new URLSearchParams(location.hash.slice(1)).get('invite') || '';
+  return /^[a-f0-9]{48}$/.test(code) ? code : '';
+}
+
+function renderTemporaryPortal(data) {
+  const lessons = Array.isArray(data.lessons) ? data.lessons
+    .filter((item) => item && typeof item === 'object') : [];
+  $('#temp-name').textContent = data.name || '同學';
+  $('#temp-next-lesson').textContent = data.nextLesson || '下次時間還在討論中';
+  $('#temp-progress').textContent = data.progress || '我們慢慢累積。';
+  $('#temp-note').textContent = data.teacherNote || '老師還沒有留下新的提醒。';
+  $('#temp-homework').textContent = data.homework || '先照自己的步調複習就好。';
+  $('#temp-materials').replaceChildren(materialList(data.materials));
+  $('#temp-lessons').replaceChildren(...lessons.sort((a, b) =>
+    String(b.date).localeCompare(String(a.date))).map(lessonCard));
+  if (!lessons.length) $('#temp-lessons').textContent = '老師還沒有加入課堂紀錄。';
+  const linked = !state.user.isAnonymous;
+  $('#temp-link-google').hidden = linked;
+  $('#temp-request-access').hidden = !linked;
+  $('#temp-link-status').textContent = linked
+    ? `已連結 ${state.user.email || 'Google 帳號'}。之後用這個 Google 帳號登入，仍能看到這些課堂筆記。`
+    : '有 Google 帳號時，請在同一台裝置按下方按鈕連結；課堂紀錄會跟著你的帳號。';
+  $('#temp-request-status').textContent = linked
+    ? '完整學員專區仍待黑犬老師核對並開通。' : '這個臨時邀請只供你本人使用，請不要轉傳。';
+  showOnly('temporary-view');
+  setMessage('');
+}
+
+async function loadTemporaryPortal() {
+  const { doc, getDoc } = state.sdk.firestore;
+  const claim = await getDoc(doc(state.db, 'temporaryClaims', state.user.uid));
+  if (!claim.exists()) return false;
+  try {
+    const invite = await getDoc(doc(state.db, 'temporaryInvites', claim.data().inviteId));
+    if (!invite.exists()) throw new Error('invite revoked');
+    renderTemporaryPortal(invite.data());
+  } catch {
+    showOnly('temporary-entry-view');
+    setMessage('臨時邀請已失效，請聯繫黑犬老師取得新的連結。', true);
+  }
+  return true;
 }
 
 async function loadPortalDetails(uid = state.user.uid, preview = false) {
@@ -791,7 +841,20 @@ function draftLessons(data) {
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
-function teacherDraftCard(id, data, studentDocs) {
+function temporaryInviteUrl(code) {
+  const url = new URL('./student.html', location.href);
+  url.hash = `invite=${code}`;
+  return url.href;
+}
+
+function temporaryLesson(data) {
+  return Object.fromEntries([
+    'date', 'kind', 'status', 'content', 'feedback', 'homework', 'nextTopic',
+    'nextPractice', 'goal', 'score', 'before', 'after', 'materials'
+  ].map((key) => [key, key === 'score' ? Number(data[key]) || 0 : String(data[key] || '')]));
+}
+
+function teacherDraftCard(id, data, studentDocs, invites = []) {
   const card = document.createElement('article');
   card.className = 'student-editor';
   const title = document.createElement('strong');
@@ -806,6 +869,12 @@ function teacherDraftCard(id, data, studentDocs) {
   history.replaceChildren(...lessons.map(lessonCard));
   card.append(title, status, history);
   if (data.status === 'linked') return card;
+  const preview = document.createElement('button');
+  preview.type = 'button';
+  preview.className = 'secondary-button';
+  preview.textContent = '預覽學員會看到的舊課';
+  preview.addEventListener('click', () => openStudentPreview(`draft:${id}`));
+  card.append(preview);
   const approved = studentDocs.filter((item) => item.data().active === true);
   const label = document.createElement('label');
   label.className = 'field draft-picker';
@@ -863,6 +932,11 @@ function teacherDraftCard(id, data, studentDocs) {
         materials: String(latest.materials || ''),
         updatedAt: serverTimestamp()
       });
+      for (const invite of invites.filter((item) => item.data().active)) {
+        await updateDoc(doc(state.db, 'temporaryInvites', invite.id), {
+          active: false, updatedAt: serverTimestamp()
+        });
+      }
       await updateDoc(doc(state.db, 'unlinkedStudentRecords', id), {
         status: 'linked', linkedUid: uid
       });
@@ -874,6 +948,90 @@ function teacherDraftCard(id, data, studentDocs) {
     }
   });
   card.append(label, verifiedLabel, link);
+  const inviteBox = document.createElement('section');
+  inviteBox.className = 'temp-invite-tools';
+  const heading = document.createElement('h4');
+  heading.textContent = '還沒有 Google 帳號？先給學員臨時連結';
+  const description = document.createElement('p');
+  description.className = 'helper';
+  description.textContent = '連結只能由一位學員領取，30 天後失效；請私下交給本人。之後可在同一個帳號連結 Google。';
+  inviteBox.append(heading, description);
+  const activeInvites = invites.filter((item) => item.data().active
+    && item.data().expiresAt?.toMillis() > Date.now());
+  for (const invite of invites) {
+    const row = document.createElement('div');
+    row.className = 'temp-invite-row';
+    const label = document.createElement('strong');
+    const valid = invite.data().active && invite.data().expiresAt?.toMillis() > Date.now();
+    label.textContent = valid
+      ? invite.data().claimedUid ? '已領取的臨時連結' : '尚未領取的臨時連結'
+      : '已停用或過期的連結';
+    row.append(label);
+    if (valid && !invite.data().claimedUid) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.readOnly = true;
+      input.value = temporaryInviteUrl(invite.id);
+      input.setAttribute('aria-label', `${data.name || '學員'}的臨時連結`);
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'secondary-button';
+      copy.textContent = '複製連結';
+      copy.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(input.value); setMessage('臨時連結已複製，請私下傳給學員本人。'); }
+        catch { input.select(); setMessage('請手動複製已選取的臨時連結。'); }
+      });
+      row.append(input, copy);
+    }
+    if (valid) {
+      const revoke = document.createElement('button');
+      revoke.type = 'button';
+      revoke.className = 'secondary-button';
+      revoke.textContent = '停用連結';
+      revoke.addEventListener('click', async () => {
+        revoke.disabled = true;
+        try {
+          await state.sdk.firestore.updateDoc(state.sdk.firestore.doc(
+            state.db, 'temporaryInvites', invite.id), {
+            active: false, updatedAt: state.sdk.firestore.serverTimestamp()
+          });
+          await loadTeacher();
+          setMessage('臨時連結已停用。');
+        } catch { setMessage('停用失敗，請稍後再試。', true); revoke.disabled = false; }
+      });
+      row.append(revoke);
+    }
+    inviteBox.append(row);
+  }
+  const create = document.createElement('button');
+  create.type = 'button';
+  create.className = 'secondary-button';
+  create.textContent = '建立一次性臨時連結';
+  create.disabled = activeInvites.length > 0 || !lessons.length;
+  create.addEventListener('click', async () => {
+    create.disabled = true;
+    try {
+      const bytes = crypto.getRandomValues(new Uint8Array(24));
+      const code = [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+      const latest = lessons.at(-1);
+      const { doc, setDoc, serverTimestamp, Timestamp } = state.sdk.firestore;
+      await setDoc(doc(state.db, 'temporaryInvites', code), {
+        recordId: id, name: String(data.name || '').slice(0, 80),
+        progress: String(latest.content || '').slice(0, 4000),
+        teacherNote: String(latest.feedback || '').slice(0, 4000),
+        homework: String(latest.homework || '').slice(0, 4000),
+        materials: String(latest.materials || '').slice(0, 4000),
+        nextLesson: '', lessons: lessons.slice(-15).map(temporaryLesson),
+        active: true, claimedUid: '',
+        expiresAt: Timestamp.fromDate(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
+        createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+      });
+      await loadTeacher();
+      setMessage('臨時連結已建立。請在待綁定舊課區複製連結，私下交給學員。');
+    } catch { setMessage('臨時連結建立失敗，請稍後再試。', true); create.disabled = false; }
+  });
+  inviteBox.append(create);
+  card.append(inviteBox);
   return card;
 }
 
@@ -915,13 +1073,15 @@ function teacherRequestCard(id, data, hasStudentRecord) {
 async function loadTeacher() {
   const { collection, getDocs } = state.sdk.firestore;
   try {
-    const [requests, students, drafts, privateRecords] = await Promise.all([
+    const [requests, students, drafts, privateRecords, temporaryInvites] = await Promise.all([
       getDocs(collection(state.db, 'accessRequests')),
       getDocs(collection(state.db, 'students')),
       getDocs(collection(state.db, 'unlinkedStudentRecords')),
-      getDocs(collection(state.db, 'teacherRecords'))
+      getDocs(collection(state.db, 'teacherRecords')),
+      getDocs(collection(state.db, 'temporaryInvites'))
     ]);
     state.teacherStudents = new Map(students.docs.map((item) => [item.id, item.data()]));
+    state.teacherDrafts = new Map(drafts.docs.map((item) => [item.id, item.data()]));
     const requestList = $('#request-list');
     const pending = requests.docs.filter((item) => item.data().status !== 'approved');
     requestList.replaceChildren(...pending.map((item) =>
@@ -935,7 +1095,8 @@ async function loadTeacher() {
     if (students.empty) studentList.textContent = '核准第一位學員後，課程編輯欄會出現在這裡。';
     const draftList = $('#draft-list');
     draftList.replaceChildren(...drafts.docs.map((item) =>
-      teacherDraftCard(item.id, item.data(), students.docs)
+      teacherDraftCard(item.id, item.data(), students.docs,
+        temporaryInvites.docs.filter((invite) => invite.data().recordId === item.id))
     ));
     if (drafts.empty) draftList.textContent = '目前沒有等待綁定的舊課。';
     renderTeacherBoard(pending, students.docs, drafts.docs);
@@ -987,6 +1148,24 @@ async function openStudentPreview(uid) {
   note.textContent = '正在載入學員畫面…';
   area.prepend(note);
   $('#student-view').hidden = true;
+  area.classList.toggle('draft-preview', uid.startsWith('draft:'));
+  if (uid.startsWith('draft:')) {
+    const draft = state.teacherDrafts?.get(uid.slice(6));
+    if (!draft || draft.status === 'linked') {
+      note.textContent = '這份待綁定課堂資料已不在清單中。'; return;
+    }
+    const lessons = draftLessons(draft);
+    const latest = lessons.at(-1) || {};
+    renderStudent({
+      name: draft.name || '同學', nextLesson: '',
+      progress: latest.content || '', teacherNote: latest.feedback || '',
+      homework: latest.homework || '', materials: latest.materials || ''
+    }, true);
+    $('#lesson-list').replaceChildren(...lessons.slice().reverse().map(lessonCard));
+    $('#student-view').hidden = false;
+    note.textContent = `未開通預覽：${draft.name || '同學'}的舊課；臨時邀請只會顯示這些課堂與教材，老師內部資料不會顯示。`;
+    return;
+  }
   try {
     const { doc, getDoc } = state.sdk.firestore;
     const record = await getDoc(doc(state.db, 'students', uid));
@@ -1199,7 +1378,11 @@ function renderTeacherBoard(pending, students, drafts) {
       if (!student.data().active) continue;
       picker.append(new Option(student.data().name || student.data().email, student.id));
     }
-    if (students.some((item) => item.id === selected && item.data().active)) picker.value = selected;
+    if (id === 'preview-student') for (const draft of drafts) {
+      if (draft.data().status === 'linked') continue;
+      picker.append(new Option(`${draft.data().name || '未命名學員'}（尚未開通）`, `draft:${draft.id}`));
+    }
+    if ([...picker.options].some((option) => option.value === selected)) picker.value = selected;
   }
   $('#preview-open').disabled = $('#preview-student').options.length < 2;
   const draftBoard = $('#classwork-draft-list');
@@ -1328,11 +1511,88 @@ if (portalMode === 'teacher') {
   showWorkPane(location.hash.slice(1));
 }
 
+if (portalMode === 'student') {
+  $('#show-temp-entry').addEventListener('click', () => showOnly('temporary-entry-view'));
+  $('#temp-back').addEventListener('click', async () => {
+    if (state.user?.isAnonymous) await state.sdk.auth.signOut(state.auth);
+    showOnly('signed-out');
+  });
+  $('#temp-invite-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const button = event.currentTarget.querySelector('button[type="submit"]');
+    const code = String($('#temp-invite-code').value || '').trim().toLowerCase();
+    if (!/^[a-f0-9]{48}$/.test(code)) {
+      setMessage('邀請碼格式不正確，請確認老師給你的完整連結。', true); return;
+    }
+    if (state.user && !state.user.isAnonymous) {
+      setMessage('目前已用 Google 登入。請先登出，再使用臨時邀請。', true); return;
+    }
+    button.disabled = true;
+    state.claimingInvite = true;
+    try {
+      const { auth, firestore } = state.sdk;
+      if (state.auth.currentUser?.isAnonymous) {
+        const oldClaim = await firestore.getDoc(firestore.doc(
+          state.db, 'temporaryClaims', state.auth.currentUser.uid));
+        if (oldClaim.exists()) {
+          await auth.signOut(state.auth);
+          state.user = null;
+        }
+      }
+      if (!state.auth.currentUser) {
+        await auth.setPersistence(state.auth, auth.browserLocalPersistence);
+        await auth.signInAnonymously(state.auth);
+      }
+      const batch = firestore.writeBatch(state.db);
+      batch.update(firestore.doc(state.db, 'temporaryInvites', code), {
+        claimedUid: state.auth.currentUser.uid, updatedAt: firestore.serverTimestamp()
+      });
+      batch.set(firestore.doc(state.db, 'temporaryClaims', state.auth.currentUser.uid), {
+        inviteId: code, createdAt: firestore.serverTimestamp()
+      });
+      await batch.commit();
+      history.replaceState(null, '', `${location.pathname}${location.search}`);
+      await loadTemporaryPortal();
+    } catch {
+      setMessage('邀請碼無法領取，可能已被使用或過期。請聯繫黑犬老師。', true);
+    } finally { state.claimingInvite = false; button.disabled = false; }
+  });
+  $('#temp-link-google').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    if (!state.user?.isAnonymous) return;
+    button.disabled = true;
+    try {
+      const { auth } = state.sdk;
+      const result = await auth.linkWithPopup(state.user, new auth.GoogleAuthProvider());
+      state.user = result.user;
+      await result.user.getIdToken(true);
+      await loadTemporaryPortal();
+      try {
+        await submitAccessRequest();
+        $('#temp-request-status').textContent = '已通知黑犬老師核對 Google 帳號；臨時課堂仍可繼續查看。';
+      } catch { $('#temp-request-status').textContent = 'Google 已連結，請再按「通知老師開通正式專區」。'; }
+      setMessage('Google 帳號已連結，課堂紀錄會跟著同一個帳號。');
+    } catch (error) {
+      setMessage(error.code === 'auth/credential-already-in-use'
+        ? '這個 Google 帳號已經在使用，請聯繫老師核對；臨時課堂仍保留在這台裝置。'
+        : 'Google 連結沒有完成，請稍後再試。', true);
+    } finally { button.disabled = false; }
+  });
+  $('#temp-request-access').addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try { await submitAccessRequest(); setMessage('已通知黑犬老師核對 Google 帳號。'); }
+    catch { setMessage('通知未送出，請稍後再試。', true); }
+    finally { button.disabled = false; }
+  });
+}
+
 $('#google-sign-in').addEventListener('click', async () => {
   const button = $('#google-sign-in');
   button.disabled = true;
   setMessage('正在開啟 Google 登入視窗…');
   try {
+    await state.sdk.auth.setPersistence(state.auth, state.sdk.auth.browserSessionPersistence);
     await state.sdk.auth.signInWithPopup(state.auth, new state.sdk.auth.GoogleAuthProvider());
   } catch (error) {
     const details = error.code === 'auth/popup-blocked' ? '請允許瀏覽器彈出視窗後再試。'
@@ -1348,17 +1608,26 @@ $('#sign-out').addEventListener('click', async () => {
   catch { setMessage('登出失敗，請稍後再試。', true); }
 });
 
+async function submitAccessRequest() {
+  const { doc, getDoc, setDoc, serverTimestamp } = state.sdk.firestore;
+  const ref = doc(state.db, 'accessRequests', state.user.uid);
+  const existing = await getDoc(ref);
+  if (existing.exists()) {
+    if (existing.data().status === 'denied') throw new Error('access denied');
+    return;
+  }
+  await setDoc(ref, {
+    uid: state.user.uid, email: state.user.email,
+    displayName: state.user.displayName || '', status: 'pending',
+    createdAt: serverTimestamp()
+  });
+}
+
 $('#request-access').addEventListener('click', async () => {
   const button = $('#request-access');
   button.disabled = true;
   try {
-    await state.sdk.firestore.setDoc(state.sdk.firestore.doc(state.db, 'accessRequests', state.user.uid), {
-      uid: state.user.uid,
-      email: state.user.email,
-      displayName: state.user.displayName || '',
-      status: 'pending',
-      createdAt: state.sdk.firestore.serverTimestamp()
-    });
+    await submitAccessRequest();
     await showPending();
   } catch { setMessage('送出開通申請失敗，請稍後再試。', true); }
   finally { button.disabled = false; }
@@ -1375,12 +1644,20 @@ async function start() {
     const instance = app.initializeApp(firebaseConfig);
     state.auth = auth.getAuth(instance);
     state.db = firestore.getFirestore(instance);
-    await auth.setPersistence(state.auth, auth.browserSessionPersistence);
     auth.onAuthStateChanged(state.auth, async (user) => {
       state.user = user;
       document.body.classList.toggle('has-account', Boolean(user));
       $('#sign-out').hidden = !user;
-      if (!user) { showOnly('signed-out'); setMessage(''); return; }
+      if (!user) {
+        if (state.claimingInvite) return;
+        if (portalMode === 'student' && inviteFromUrl()) {
+          $('#temp-invite-code').value = inviteFromUrl();
+          showOnly('temporary-entry-view');
+          $('#temporary-entry-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else showOnly('signed-out');
+        setMessage(''); return;
+      }
+      if (user.isAnonymous && state.claimingInvite) return;
       setMessage('正在確認你的學員權限…');
       if (isTeacher(user)) {
         if (portalMode === 'student') { window.location.replace('./teacher.html'); return; }
