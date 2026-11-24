@@ -29,7 +29,7 @@ service cloud.firestore {
         ])
         && request.resource.data.keys().hasOnly([
           'date', 'content', 'feedback', 'nextTopic', 'materials', 'createdAt', 'updatedAt',
-          'kind', 'status', 'homework', 'nextPractice', 'goal', 'score', 'before', 'after'
+          'kind', 'status', 'homework', 'nextPractice', 'goal', 'score', 'before', 'after', 'makeupFrom'
         ])
         && request.resource.data.date is string
         && request.resource.data.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
@@ -57,6 +57,8 @@ service cloud.firestore {
         && request.resource.data.get('before', '').size() <= 4000
         && request.resource.data.get('after', '') is string
         && request.resource.data.get('after', '').size() <= 4000
+        && request.resource.data.get('makeupFrom', '') is string
+        && request.resource.data.get('makeupFrom', '').size() <= 160
         && request.resource.data.updatedAt == request.time;
     }
 
@@ -89,8 +91,12 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly([
           'senderUid', 'type', 'body', 'reply', 'status', 'createdAt', 'updatedAt'
         ])
-        && request.resource.data.senderUid == uid
-        && request.resource.data.type in ['一般訊息', '請假', '下次教材', '課後回饋']
+        && request.resource.data.senderUid is string
+        && request.resource.data.senderUid.size() <= 128
+        && request.resource.data.type in [
+          '一般訊息', '請假', '下次教材', '課後回饋',
+          '下次上課已確認', '下次時段提議', '老師請假', '補課時間已確認'
+        ]
         && request.resource.data.body is string
         && request.resource.data.body.size() > 0
         && request.resource.data.body.size() <= 2500
@@ -201,12 +207,23 @@ service cloud.firestore {
       match /messages/{messageId} {
         allow get, list: if teacher() || (self(uid)
           && get(studentPath(uid)).data.active == true);
-        allow create: if self(uid)
+        allow create: if exists(studentPath(uid))
           && get(studentPath(uid)).data.active == true
           && validMessage(uid)
           && request.resource.data.reply == ''
-          && request.resource.data.status == '待回覆'
-          && request.resource.data.createdAt == request.time;
+          && request.resource.data.createdAt == request.time
+          && (
+            (self(uid)
+              && request.resource.data.senderUid == uid
+              && request.resource.data.type in ['一般訊息', '請假', '下次教材', '課後回饋']
+              && request.resource.data.status == '待回覆')
+            || (teacher()
+              && request.resource.data.senderUid == request.auth.uid
+              && request.resource.data.type in [
+                '下次上課已確認', '下次時段提議', '老師請假', '補課時間已確認'
+              ]
+              && request.resource.data.status == '已回覆')
+          );
         allow update: if teacher()
           && validMessage(uid)
           && request.resource.data.createdAt == resource.data.createdAt
