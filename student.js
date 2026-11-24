@@ -68,6 +68,12 @@ function lessonCard(data) {
   date.className = 'card-kicker';
   date.textContent = `${data.date || '課堂紀錄'}${data.kind ? ` · ${data.kind}` : ''}${data.status ? ` · ${data.status}` : ''}`;
   card.append(date);
+  if (data.makeupFrom) {
+    const original = document.createElement('p');
+    original.className = 'helper';
+    original.textContent = `原訂日期：${data.makeupFrom}；這堂已安排補課。`;
+    card.append(original);
+  }
   for (const [label, value] of [
     ['這堂課', data.content],
     ['老師的觀察', data.feedback],
@@ -109,8 +115,8 @@ async function renderLessons(uid, target) {
   if (!sorted.length) target.textContent = '老師還沒有加入課堂紀錄。';
 }
 
-function renderStudent(data) {
-  $('#student-name').textContent = data.name || state.user.displayName || '同學';
+function renderStudent(data, preview = false) {
+  $('#student-name').textContent = data.name || (preview ? '同學' : state.user.displayName || '同學');
   $('#next-lesson').textContent = data.nextLesson || '還沒安排下次上課時間';
   $('#progress').textContent = data.progress || '老師正在整理你的學習進度。';
   $('#teacher-note').textContent = data.teacherNote || '這裡會放老師想告訴你的話。';
@@ -133,8 +139,7 @@ function renderStudent(data) {
     li.append(anchor);
     list.append(li);
   }
-  showOnly('student-view');
-  setMessage('');
+  if (!preview) { showOnly('student-view'); setMessage(''); }
 }
 
 async function showPending() {
@@ -175,9 +180,9 @@ async function loadStudent() {
   catch { setMessage('目前無法確認開通狀態，請稍後再試。', true); }
 }
 
-async function loadPortalDetails() {
+async function loadPortalDetails(uid = state.user.uid, preview = false) {
   const { doc, getDoc } = state.sdk.firestore;
-  const target = await getDoc(doc(state.db, 'students', state.user.uid, 'portalDetails', 'summary'));
+  const target = await getDoc(doc(state.db, 'students', uid, 'portalDetails', 'summary'));
   const data = target.exists() ? target.data() : {};
   $('#student-schedule-note').textContent = data.scheduleNote || '目前沒有新的排課提醒。';
   $('#student-speaking-progress').textContent = data.speakingProgress || '口說進步會在上課後慢慢累積。';
@@ -201,12 +206,12 @@ async function loadPortalDetails() {
   const button = $('#student-acknowledge');
   button.hidden = true;
   if (state.agreementVersion && (data.agreementText || data.agreementLink)) {
-    const saved = await getDoc(doc(state.db, 'students', state.user.uid,
+    const saved = await getDoc(doc(state.db, 'students', uid,
       'agreementAcknowledgements', state.agreementVersion));
     ack.textContent = saved.exists()
       ? '你已確認這一版約定。'
       : '閱讀完內容或文件後，可在這裡留下確認紀錄。';
-    button.hidden = saved.exists();
+    button.hidden = preview || saved.exists();
   } else ack.textContent = '';
 }
 
@@ -228,11 +233,13 @@ if (portalMode === 'student') $('#student-acknowledge').addEventListener('click'
   finally { button.disabled = false; }
 });
 
-function messageCard(data) {
+function messageCard(data, uid) {
   const card = document.createElement('article');
   card.className = 'message-row';
   const title = document.createElement('strong');
-  title.textContent = `${data.type || '訊息'} · ${data.status || '待回覆'}`;
+  title.textContent = data.senderUid === uid
+    ? `${data.type || '訊息'} · ${data.status || '待回覆'}`
+    : `黑犬老師通知 · ${data.type || '訊息'}`;
   const body = document.createElement('p');
   body.textContent = data.body || '';
   card.append(title, body);
@@ -245,12 +252,12 @@ function messageCard(data) {
   return card;
 }
 
-async function loadStudentMessages() {
+async function loadStudentMessages(uid = state.user.uid) {
   const { collection, getDocs } = state.sdk.firestore;
-  const records = await getDocs(collection(state.db, 'students', state.user.uid, 'messages'));
+  const records = await getDocs(collection(state.db, 'students', uid, 'messages'));
   const sorted = records.docs.map((item) => item.data())
     .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-  $('#student-message-list').replaceChildren(...sorted.map(messageCard));
+  $('#student-message-list').replaceChildren(...sorted.map((item) => messageCard(item, uid)));
   if (!sorted.length) $('#student-message-list').textContent = '還沒有留言。';
 }
 
@@ -712,7 +719,21 @@ function teacherStudentCard(id, data, privateData = {}) {
     button.addEventListener('click', () => setTab(label));
     tabs.append(button);
   }
-  card.append(summary, tabs, basicPanel, lessonPanel, privateForm, messages);
+  const shortcuts = document.createElement('div');
+  shortcuts.className = 'student-shortcuts';
+  for (const [label, action] of [
+    ['預覽學員畫面', () => openStudentPreview(id)],
+    ['安排下一堂', () => openSchedule(id, 'confirm')],
+    ['老師請假', () => openSchedule(id, 'leave')]
+  ]) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'secondary-button';
+    button.textContent = label;
+    button.addEventListener('click', action);
+    shortcuts.append(button);
+  }
+  card.append(summary, shortcuts, tabs, basicPanel, lessonPanel, privateForm, messages);
   setTab('資料');
   return card;
 }
@@ -730,10 +751,12 @@ async function loadTeacherMessages(uid, target) {
       const form = document.createElement('form');
       form.className = 'reply-form';
       const title = document.createElement('strong');
-      title.textContent = `${data.type} · ${data.status}`;
+      title.textContent = data.senderUid === uid
+        ? `${data.type} · ${data.status}` : `老師通知 · ${data.type}`;
       const body = document.createElement('p');
       body.className = 'preserve-lines';
       body.textContent = data.body;
+      if (data.senderUid !== uid) { form.append(title, body); target.append(form); continue; }
       const reply = makeField('回覆學員', 'reply', data.reply, { full: true, multiline: true, max: 2500 });
       const button = document.createElement('button');
       button.type = 'submit';
@@ -898,6 +921,7 @@ async function loadTeacher() {
       getDocs(collection(state.db, 'unlinkedStudentRecords')),
       getDocs(collection(state.db, 'teacherRecords'))
     ]);
+    state.teacherStudents = new Map(students.docs.map((item) => [item.id, item.data()]));
     const requestList = $('#request-list');
     const pending = requests.docs.filter((item) => item.data().status !== 'approved');
     requestList.replaceChildren(...pending.map((item) =>
@@ -917,6 +941,9 @@ async function loadTeacher() {
     renderTeacherBoard(pending, students.docs, drafts.docs);
     await loadTeacherPlans();
     showOnly('teacher-view');
+    $('#preview-content').append($('#student-view'));
+    $('#student-view').hidden = true;
+    void refreshScheduleLessons();
     if (!$('#portal-message').classList.contains('error')) setMessage('');
   } catch { showOnly('teacher-view'); setMessage('無法載入老師資料，請檢查帳號與資料庫權限。', true); }
 }
@@ -945,8 +972,156 @@ async function loadTeacherPlans() {
 
 const workNames = {
   classwork: '今日課堂', overview: '工作總覽', students: '學生管理',
-  schedule: '課堂時間參考', materials: '個人化教材', plans: '課程與方案'
+  schedule: '排課與請假', preview: '學員畫面預覽',
+  materials: '個人化教材', plans: '課程與方案'
 };
+
+async function openStudentPreview(uid) {
+  if (!uid || !isTeacher(state.user)) return;
+  showWorkPane('preview');
+  $('#preview-student').value = uid;
+  const area = $('#preview-content');
+  area.querySelector('.preview-status')?.remove();
+  const note = document.createElement('p');
+  note.className = 'paper preview-status';
+  note.textContent = '正在載入學員畫面…';
+  area.prepend(note);
+  $('#student-view').hidden = true;
+  try {
+    const { doc, getDoc } = state.sdk.firestore;
+    const record = await getDoc(doc(state.db, 'students', uid));
+    if (!record.exists() || record.data().active !== true) {
+      note.textContent = '這個帳號尚未開通，學員登入後只會看到開通狀態，不會看到課程資料。';
+      return;
+    }
+    renderStudent(record.data(), true);
+    $('#student-view').hidden = false;
+    const results = await Promise.allSettled([
+      renderLessons(uid, $('#lesson-list')),
+      loadPortalDetails(uid, true),
+      loadStudentMessages(uid)
+    ]);
+    note.textContent = results.some((result) => result.status === 'rejected')
+      ? '這是唯讀預覽；部分資料暫時無法載入，請稍後再試。'
+      : `唯讀預覽：${record.data().name || record.data().email} 登入後可見的內容。草稿與老師內部備註不會顯示。`;
+  } catch { note.textContent = '預覽暫時無法載入，請確認老師帳號的資料庫權限。'; }
+}
+
+function formatTaipeiSlot(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!match) return '';
+  const [, year, month, day, hour, minute] = match;
+  const date = new Date(`${year}-${month}-${day}T12:00:00Z`);
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== `${year}-${month}-${day}`
+    || Number(hour) > 23 || Number(minute) > 59) return '';
+  const weekday = date.toLocaleDateString('zh-TW', { timeZone: 'UTC', weekday: 'short' });
+  return `${year}/${month}/${day}（${weekday}）${hour}:${minute} 台灣時間`;
+}
+
+async function refreshScheduleLessons() {
+  const uid = $('#schedule-student').value;
+  const action = $('#schedule-action').value;
+  $('#schedule-lesson-label').hidden = !['leave', 'makeup'].includes(action);
+  $('#schedule-time-label').hidden = action === 'leave';
+  $('#schedule-help').textContent = {
+    confirm: '確認後會更新學員的「下次上課時間」，並在學員專區留下通知。',
+    propose: '這是待討論的時段；原本已確認的下次上課時間不會被改掉。',
+    leave: '會通知學員老師請假；若選了已排課的課堂，該堂會標記為待補課。',
+    makeup: '請先選一堂待補課的課，確認後會更新課堂日期和學員的下次上課時間。'
+  }[action];
+  const select = $('#schedule-lesson');
+  select.replaceChildren(new Option(action === 'makeup' ? '選擇待補課的課堂' : '未建立課堂紀錄（只更新下次時間）', ''));
+  if (!uid || !['leave', 'makeup'].includes(action)) return;
+  try {
+    const { collection, getDocs } = state.sdk.firestore;
+    const records = await getDocs(collection(state.db, 'students', uid, 'lessons'));
+    if ($('#schedule-student').value !== uid || $('#schedule-action').value !== action) return;
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' });
+    for (const record of records.docs) {
+      const lesson = record.data();
+      if (action === 'makeup' ? lesson.status !== '待補課'
+        : !['已排課', '待確認'].includes(lesson.status) || lesson.date < today) continue;
+      select.append(new Option(`${lesson.date} · ${lesson.kind || '正式課'} · ${lesson.status}`, record.id));
+    }
+    if (action === 'makeup' && select.options.length === 1) {
+      $('#schedule-help').textContent = '目前沒有待補課的課堂；請先在課堂紀錄將原課標記為待補課。';
+    }
+  } catch { $('#schedule-help').textContent = '課堂清單暫時無法載入，請稍後再試。'; }
+}
+
+function openSchedule(uid, action = 'confirm', lessonId = '') {
+  showWorkPane('schedule');
+  $('#schedule-student').value = uid;
+  $('#schedule-action').value = action;
+  void refreshScheduleLessons().then(() => {
+    if (lessonId) $('#schedule-lesson').value = lessonId;
+  });
+  $('#schedule-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function saveSchedule(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const button = form.querySelector('button[type="submit"]');
+  const uid = $('#schedule-student').value;
+  const action = $('#schedule-action').value;
+  const lessonId = $('#schedule-lesson').value;
+  const value = $('#schedule-time').value;
+  const slot = formatTaipeiSlot(value);
+  const note = String(new FormData(form).get('note') || '').trim();
+  if (!uid || !state.teacherStudents?.has(uid)) { setMessage('請先選擇學員。', true); return; }
+  if (action !== 'leave' && (!slot || Date.parse(`${value}+08:00`) <= Date.now())) {
+    setMessage('請填寫未來的有效日期與時間（台灣時間）。', true); return;
+  }
+  if (action === 'makeup' && !lessonId) { setMessage('請先選擇一堂待補課的課。', true); return; }
+  button.disabled = true;
+  try {
+    const { collection, doc, getDoc, writeBatch, serverTimestamp } = state.sdk.firestore;
+    const student = await getDoc(doc(state.db, 'students', uid));
+    if (!student.exists() || !student.data().active) throw new Error('inactive student');
+    let related = null;
+    if (lessonId && ['leave', 'makeup'].includes(action)) {
+      related = await getDoc(doc(state.db, 'students', uid, 'lessons', lessonId));
+      if (!related.exists() || (action === 'makeup' && related.data().status !== '待補課')
+        || (action === 'leave' && !['已排課', '待確認'].includes(related.data().status))) {
+        throw new Error('lesson status changed');
+      }
+    }
+    const original = related?.data().date || student.data().nextLesson || '原時間待核對';
+    const kind = { confirm: '下次上課已確認', propose: '下次時段提議',
+      leave: '老師請假', makeup: '補課時間已確認' }[action];
+    const detail = action === 'leave'
+      ? `原訂：${original}。老師這次需要請假，補課時間再一起確認。`
+      : `${action === 'propose' ? '建議時段' : '上課時間'}：${slot}。`;
+    const body = `${detail}${note ? `\n${note}` : ''}`;
+    const batch = writeBatch(state.db);
+    if (action === 'confirm' || action === 'makeup') batch.update(doc(state.db, 'students', uid), {
+      nextLesson: slot, updatedAt: serverTimestamp()
+    });
+    if (action === 'leave') batch.update(doc(state.db, 'students', uid), {
+      nextLesson: '老師請假，補課時間待確認', updatedAt: serverTimestamp()
+    });
+    if (related && action === 'leave') batch.update(related.ref, {
+      status: '待補課', updatedAt: serverTimestamp()
+    });
+    if (related && action === 'makeup') batch.update(related.ref, {
+      date: value.slice(0, 10), status: '已排課',
+      makeupFrom: related.data().makeupFrom || related.data().date,
+      updatedAt: serverTimestamp()
+    });
+    batch.set(doc(collection(state.db, 'students', uid, 'messages')), {
+      senderUid: state.user.uid, type: kind, body, reply: '', status: '已回覆',
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+    });
+    await batch.commit();
+    form.elements.namedItem('note').value = '';
+    await loadTeacher();
+    $('#schedule-student').value = uid;
+    void refreshScheduleLessons();
+    setMessage(`${kind}已保存，學員登入後可在自己的專區看到。`);
+  } catch { setMessage('排課異動沒有保存。請重新整理，確認學員與課堂狀態後再試。', true); }
+  finally { button.disabled = false; }
+}
 
 function showWorkPane(name) {
   if (portalMode !== 'teacher') return;
@@ -1016,6 +1191,17 @@ function renderTeacherBoard(pending, students, drafts) {
     selector.append(option);
   }
   $('#classwork-open').disabled = !students.length;
+  for (const id of ['schedule-student', 'preview-student']) {
+    const picker = $(`#${id}`);
+    const selected = picker.value;
+    picker.replaceChildren(new Option(students.length ? '選擇學員' : '尚無已開通學員', ''));
+    for (const student of students) {
+      if (!student.data().active) continue;
+      picker.append(new Option(student.data().name || student.data().email, student.id));
+    }
+    if (students.some((item) => item.id === selected && item.data().active)) picker.value = selected;
+  }
+  $('#preview-open').disabled = $('#preview-student').options.length < 2;
   const draftBoard = $('#classwork-draft-list');
   draftBoard.replaceChildren(...activeDrafts.map((item) => boardRow(
     item.data().name || '未命名學員',
@@ -1059,13 +1245,24 @@ function renderTeacherBoard(pending, students, drafts) {
     const records = await state.sdk.firestore.getDocs(
       state.sdk.firestore.collection(state.db, 'students', student.id, 'lessons')
     );
-    return { student, lessons: records.docs.map((item) => item.data()) };
+    return { student, lessons: records.docs.map((item) => ({ id: item.id, ...item.data() })) };
   })).then((all) => {
     todayList.replaceChildren(...all.flatMap(({ student, lessons }) => lessons
       .filter((lesson) => lesson.date === today)
       .map((lesson) => boardRow(student.data().name || '未填稱呼',
         lesson.content.slice(0, 100), () => openStudentEditor(student.id, true)))));
     if (!todayList.childElementCount) todayList.textContent = '今天還沒有課堂紀錄；可選學員開始寫。';
+    const pendingRows = all.flatMap(({ student, lessons }) => lessons
+      .filter((lesson) => lesson.status === '待補課')
+      .map((lesson) => ({ student, lesson })));
+    for (const target of [$('#pending-makeup-list'), $('#schedule-pending-list')]) {
+      target.replaceChildren(...pendingRows.map(({ student, lesson }) => boardRow(
+        student.data().name || '未填稱呼',
+        `原訂 ${lesson.makeupFrom || lesson.date} · ${lesson.kind || '正式課'}`,
+        () => openSchedule(student.id, 'makeup', lesson.id)
+      )));
+      if (!pendingRows.length) target.textContent = '目前沒有待補課的課。';
+    }
     const library = $('#material-library');
     const entries = all.flatMap(({ student, lessons }) => lessons
       .filter((lesson) => safeMaterials(lesson.materials).length)
@@ -1084,6 +1281,8 @@ function renderTeacherBoard(pending, students, drafts) {
     if (!entries.length) library.textContent = '目前還沒有附上教材連結。';
   }).catch(() => {
     todayList.textContent = '目前無法讀取今天的課堂紀錄。';
+    $('#pending-makeup-list').textContent = '待補課清單暫時無法載入。';
+    $('#schedule-pending-list').textContent = '待補課清單暫時無法載入。';
     $('#material-library').textContent = '目前無法讀取教材清單。';
   });
 }
@@ -1115,6 +1314,10 @@ if (portalMode === 'teacher') {
   document.querySelectorAll('[data-open-work]').forEach((button) => button.addEventListener('click', () =>
     showWorkPane(button.dataset.openWork)));
   $('#classwork-open').addEventListener('click', () => openStudentEditor($('#classwork-student').value, true));
+  $('#preview-open').addEventListener('click', () => void openStudentPreview($('#preview-student').value));
+  $('#schedule-student').addEventListener('change', () => void refreshScheduleLessons());
+  $('#schedule-action').addEventListener('change', () => void refreshScheduleLessons());
+  $('#schedule-form').addEventListener('submit', saveSchedule);
   $('#student-search').addEventListener('input', (event) => {
     const query = event.target.value.trim().toLocaleLowerCase();
     document.querySelectorAll('.student-editor[data-student-id]').forEach((card) => {
