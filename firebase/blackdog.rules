@@ -15,6 +15,23 @@ service cloud.firestore {
       return googleUser() && request.auth.uid == uid;
     }
 
+    function signedInSelf(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function anonymousUser() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'anonymous';
+    }
+
+    function invitePath(code) {
+      return /databases/$(database)/documents/temporaryInvites/$(code);
+    }
+
+    function claimPath(uid) {
+      return /databases/$(database)/documents/temporaryClaims/$(uid);
+    }
+
     function requestPath(uid) {
       return /databases/$(database)/documents/accessRequests/$(uid);
     }
@@ -131,6 +148,39 @@ service cloud.firestore {
         && request.resource.data.homework.size() <= 4000
         && request.resource.data.materials is string
         && request.resource.data.materials.size() <= 4000
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    function validTemporaryInvite() {
+      return request.resource.data.keys().hasAll([
+          'recordId', 'name', 'progress', 'teacherNote', 'homework', 'materials',
+          'nextLesson', 'lessons', 'active', 'claimedUid', 'expiresAt', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'recordId', 'name', 'progress', 'teacherNote', 'homework', 'materials',
+          'nextLesson', 'lessons', 'active', 'claimedUid', 'expiresAt', 'createdAt', 'updatedAt'
+        ])
+        && request.resource.data.recordId is string
+        && request.resource.data.recordId.size() <= 128
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.progress is string
+        && request.resource.data.progress.size() <= 4000
+        && request.resource.data.teacherNote is string
+        && request.resource.data.teacherNote.size() <= 4000
+        && request.resource.data.homework is string
+        && request.resource.data.homework.size() <= 4000
+        && request.resource.data.materials is string
+        && request.resource.data.materials.size() <= 4000
+        && request.resource.data.nextLesson is string
+        && request.resource.data.nextLesson.size() <= 160
+        && request.resource.data.lessons is list
+        && request.resource.data.lessons.size() <= 15
+        && request.resource.data.active is bool
+        && request.resource.data.claimedUid is string
+        && request.resource.data.claimedUid.size() <= 128
+        && request.resource.data.expiresAt is timestamp
+        && request.resource.data.createdAt is timestamp
         && request.resource.data.updatedAt == request.time;
     }
 
@@ -281,6 +331,52 @@ service cloud.firestore {
         && exists(studentPath(request.resource.data.linkedUid))
         && get(studentPath(request.resource.data.linkedUid)).data.active == true;
       allow create, delete: if false;
+    }
+
+    match /temporaryInvites/{code} {
+      allow get: if teacher() || (request.auth != null
+        && resource.data.claimedUid == request.auth.uid
+        && resource.data.active == true
+        && resource.data.expiresAt > request.time);
+      allow list: if teacher();
+      allow create: if teacher()
+        && code.matches('[a-f0-9]{48}')
+        && validTemporaryInvite()
+        && request.resource.data.claimedUid == ''
+        && request.resource.data.active == true
+        && request.resource.data.expiresAt > request.time
+        && request.resource.data.createdAt == request.time
+        && exists(/databases/$(database)/documents/unlinkedStudentRecords/$(request.resource.data.recordId));
+      allow update: if (
+        teacher()
+        && validTemporaryInvite()
+        && request.resource.data.recordId == resource.data.recordId
+        && request.resource.data.claimedUid == resource.data.claimedUid
+        && request.resource.data.createdAt == resource.data.createdAt
+      ) || (
+        anonymousUser()
+        && resource.data.active == true
+        && resource.data.claimedUid == ''
+        && resource.data.expiresAt > request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['claimedUid', 'updatedAt'])
+        && request.resource.data.claimedUid == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && getAfter(claimPath(request.auth.uid)).data.inviteId == code
+      );
+      allow delete: if false;
+    }
+
+    match /temporaryClaims/{uid} {
+      allow get: if teacher() || signedInSelf(uid);
+      allow list: if teacher();
+      allow create: if anonymousUser() && signedInSelf(uid)
+        && request.resource.data.keys().hasAll(['inviteId', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['inviteId', 'createdAt'])
+        && request.resource.data.inviteId is string
+        && request.resource.data.inviteId.matches('[a-f0-9]{48}')
+        && request.resource.data.createdAt == request.time
+        && getAfter(invitePath(request.resource.data.inviteId)).data.claimedUid == uid;
+      allow update, delete: if false;
     }
 
     match /{document=**} {
